@@ -1,0 +1,36 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-Iinc",
+      "-Wall",
+      "-O3",
+      "-std=c++2a",
+      "-o",
+      "CMakeFiles/aoc2022.dir/src/main.cpp.o",
+      "-c",
+      "src/main.cpp"
+    ],
+    "directory": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2",
+    "file": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2/src/main.cpp",
+    "output": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2/CMakeFiles/aoc2022.dir/src/main.cpp.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-DUtilities_EXPORTS",
+      "-Iinc",
+      "-Wall",
+      "-O3",
+      "-fPIC",
+      "-std=c++2a",
+      "-o",
+      "CMakeFiles/Utilities.dir/src/Utilities.cpp.o",
+      "-c",
+      "src/Utilities.cpp"
+    ],
+    "directory": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2",
+    "file": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2/src/Utilities.cpp",
+    "output": "/home/balamurugan/Programs/Projects/aoc_2022/day6p2/CMakeFiles/Utilities.dir/src/Utilities.cpp.o"
+  }
+]

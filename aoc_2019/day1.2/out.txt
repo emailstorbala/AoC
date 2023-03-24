@@ -1,0 +1,7 @@
+reqFuel -> 654
+reqFuel -> 216
+reqFuel -> 70
+reqFuel -> 21
+reqFuel -> 5
+reqFuel -> -1
+Fuel required 966

@@ -1,0 +1,23 @@
+[package]
+name = "aoc2022"
+version = "0.1.0"
+edition = "2021"
+authors = ["emailstorbala@gmail.com"]
+
+[profile.dev]
+opt-level = 0
+debug = false
+panic = 'unwind'
+
+[profile.release]
+strip = true
+opt-level = "s"
+#lto = true
+debug = false
+panic = 'unwind'
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.1.4", features = ["derive"] }
+sscanf = "0.4.0"

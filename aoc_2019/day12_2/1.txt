@@ -1,0 +1,161 @@
+PO energy -> 4
+Kin energy -> 5
+Total energy -> 20
+PO energy -> 14
+Kin energy -> 7
+Total energy -> 98
+PO energy -> 13
+Kin energy -> 7
+Total energy -> 91
+PO energy -> 4
+Kin energy -> 5
+Total energy -> 20
+(2, -1, 1) -> (3, -1, -1)
+(3, -7, -4) -> (1, 3, 3)
+(1, -7, 5) -> (-3, 1, -3)
+(2, 2, 0) -> (-1, -3, 1)
+PO energy -> 9
+Kin energy -> 7
+Total energy -> 63
+PO energy -> 5
+Kin energy -> 13
+Total energy -> 65
+PO energy -> 6
+Kin energy -> 9
+Total energy -> 54
+PO energy -> 7
+Kin energy -> 9
+Total energy -> 63
+(5, -3, -1) -> (3, -2, -2)
+(1, -2, 2) -> (-2, 5, 6)
+(1, -4, -1) -> (0, 3, -6)
+(1, -4, 2) -> (-1, -6, 2)
+PO energy -> 12
+Kin energy -> 3
+Total energy -> 36
+PO energy -> 6
+Kin energy -> 7
+Total energy -> 42
+PO energy -> 8
+Kin energy -> 10
+Total energy -> 80
+PO energy -> 11
+Kin energy -> 4
+Total energy -> 44
+(5, -6, -1) -> (0, -3, 0)
+(0, 0, 6) -> (-1, 2, 4)
+(2, 1, -5) -> (1, 5, -4)
+(1, -8, 2) -> (0, -4, 0)
+PO energy -> 10
+Kin energy -> 6
+Total energy -> 60
+PO energy -> 10
+Kin energy -> 4
+Total energy -> 40
+PO energy -> 11
+Kin energy -> 3
+Total energy -> 33
+PO energy -> 12
+Kin energy -> 3
+Total energy -> 36
+(2, -8, 0) -> (-3, -2, 1)
+(2, 1, 7) -> (2, 1, 1)
+(2, 3, -6) -> (0, 2, -1)
+(2, -9, 1) -> (1, -1, -1)
+PO energy -> 12
+Kin energy -> 6
+Total energy -> 72
+PO energy -> 10
+Kin energy -> 4
+Total energy -> 40
+PO energy -> 8
+Kin energy -> 3
+Total energy -> 24
+PO energy -> 11
+Kin energy -> 5
+Total energy -> 55
+(-1, -9, 2) -> (-3, -1, 2)
+(4, 1, 5) -> (2, 0, -2)
+(2, 2, -4) -> (0, -1, 2)
+(3, -7, -1) -> (1, 2, -2)
+PO energy -> 11
+Kin energy -> 3
+Total energy -> 33
+PO energy -> 3
+Kin energy -> 7
+Total energy -> 21
+PO energy -> 6
+Kin energy -> 10
+Total energy -> 60
+PO energy -> 9
+Kin energy -> 4
+Total energy -> 36
+(-1, -7, 3) -> (0, 2, 1)
+(3, 0, 0) -> (-1, -1, -5)
+(3, -2, 1) -> (1, -4, 5)
+(3, -4, -2) -> (0, 3, -1)
+PO energy -> 5
+Kin energy -> 10
+Total energy -> 50
+PO energy -> 9
+Kin energy -> 10
+Total energy -> 90
+PO energy -> 15
+Kin energy -> 9
+Total energy -> 135
+PO energy -> 2
+Kin energy -> 7
+Total energy -> 14
+(2, -2, 1) -> (3, 5, -2)
+(1, -4, -4) -> (-2, -4, -4)
+(3, -7, 5) -> (0, -5, 4)
+(2, 0, 0) -> (-1, 4, 2)
+PO energy -> 9
+Kin energy -> 10
+Total energy -> 90
+PO energy -> 14
+Kin energy -> 5
+Total energy -> 70
+PO energy -> 15
+Kin energy -> 6
+Total energy -> 90
+PO energy -> 5
+Kin energy -> 5
+Total energy -> 25
+(5, 2, -2) -> (3, 4, -3)
+(2, -7, -5) -> (1, -3, -1)
+(0, -9, 6) -> (-3, -2, 1)
+(1, 1, 3) -> (-1, 1, 3)
+PO energy -> 12
+Kin energy -> 3
+Total energy -> 36
+PO energy -> 14
+Kin energy -> 4
+Total energy -> 56
+PO energy -> 12
+Kin energy -> 3
+Total energy -> 36
+PO energy -> 7
+Kin energy -> 2
+Total energy -> 14
+(5, 3, -4) -> (0, 1, -2)
+(2, -9, -3) -> (0, -2, 2)
+(0, -8, 4) -> (0, 1, -2)
+(1, 1, 5) -> (0, 0, 2)
+PO energy -> 6
+Kin energy -> 6
+Total energy -> 36
+PO energy -> 9
+Kin energy -> 5
+Total energy -> 45
+PO energy -> 10
+Kin energy -> 8
+Total energy -> 80
+PO energy -> 6
+Kin energy -> 3
+Total energy -> 18
+(2, 1, -3) -> (-3, -2, 1)
+(1, -8, 0) -> (-1, 1, 3)
+(3, -6, 1) -> (3, 2, -3)
+(2, 0, 4) -> (1, -1, -1)
+Total energy after 10 steps is 161
