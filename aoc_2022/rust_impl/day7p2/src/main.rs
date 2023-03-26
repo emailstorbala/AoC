@@ -24,9 +24,9 @@ fn get_directory_size(dir: &str, dir_dtls_map: &HashMap<String, Vec<String>>) ->
                 .to_owned()
                 .to_string();
             let abs_dir: String = if dir.ends_with('/') {
-                format!("{}{}", dir, tmp_dir)
+                format!("{dir}{tmp_dir}")
             } else {
-                format!("{}/{}", dir, tmp_dir)
+                format!("{dir}/{tmp_dir}")
             };
 
             dir_size += get_directory_size(&abs_dir, dir_dtls_map);
@@ -78,11 +78,11 @@ fn read_contents(content: &str) -> HashMap<String, Vec<String>> {
                         curr_dir = dir_stack[dir_stack.len() - 1].to_string();
                     },
                     _ => {
-                        if prev_dir.ends_with("/") {
-                            curr_dir = format!("{}{}", prev_dir, tmp_dir);
+                        curr_dir = if prev_dir.ends_with("/") {
+                            format!("{prev_dir}{tmp_dir}")
                         } else {
-                            curr_dir = format!("{}/{}", prev_dir, tmp_dir);
-                        }
+                            format!("{prev_dir}/{tmp_dir}")
+                        };
                         dir_stack.push(curr_dir.clone());
                     }
                 }
@@ -105,23 +105,17 @@ fn get_dirs_to_match_expected(dir_dtls_map: &HashMap<String, Vec<String>>) -> u6
     let total_disk_size: u64 = 70000000;
     let expected_disk_free: u64 = 30000000;
     let current_disk_free: u64 = total_disk_size - get_directory_size("/", dir_dtls_map);
-    let mut dir_size_matching: u64 = 0;
     let mut matching_dir_sizes: Vec<u64> = [].to_vec();
 
     for (dir_name, _) in dir_dtls_map {
         let dir_size: u64 = get_directory_size(&dir_name, &dir_dtls_map);
-        if dir_name != "/" {
-            if (current_disk_free + dir_size) >= expected_disk_free {
-                println!("dir_size -> {dir_size}");
-                matching_dir_sizes.push(dir_size);
-            }
+        if current_disk_free + dir_size >= expected_disk_free {
+            matching_dir_sizes.push(dir_size);
         }
     }
 
-    matching_dir_sizes.sort();
-    dir_size_matching = matching_dir_sizes[0];
-
-    dir_size_matching
+    // Minimum matching_dir_sizes is expected as the function result
+    *matching_dir_sizes.iter().min().unwrap()
 }
 
 fn main() {
