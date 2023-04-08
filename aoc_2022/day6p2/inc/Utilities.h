@@ -4,9 +4,8 @@
 #include <map>
 #include <vector>
 #include <set>
-#include <fstream>
-#include <sstream>
 #include <string>
+#include <string_view>
 #include <list>
 #include <tuple>
 
@@ -24,11 +23,11 @@ class Utilities {
         std::vector<char> ConcatenateVectors(const std::vector<char> & vec1,
                                              const std::vector<char> & vec2) const;
         std::tuple<std::string, std::string> SplitStringExactHalf(const std::string & inp);
-        std::list <std::string> SimpleFileRead(const std::string &_fname);
-        std::set <char> getCommonCharacters(const std::string &_str1, const std::string &_str2);
-        std::string PrependZeros(std::string _tmp, int _length);
+        std::list <std::string> SimpleFileRead(std::string_view _fname);
+        std::set <char> getCommonCharacters(std::string_view str1, std::string_view _str2);
+        std::string PrependZeros(std::string_view _tmp, int _length);
         void GetPermutations(std::string str, std::string out,
                              std::vector <std::string> & permutations);
-        bool ContainsUniqueCharacters(const std::string & tmp);
+        bool ContainsUniqueCharacters(std::string_view tmp);
 };
 #endif  // __SRC_UTILITIES_H__

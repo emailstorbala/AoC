@@ -1,16 +1,22 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
+#include "Utilities.h"
 #include <ranges>
+#include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <fmt/format.h>
-#include "Utilities.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using std::string;
+using std::string_view;
 using std::vector;
 
-vector<std::string> Utilities::Split(std::string _inp, char DELIMITER) const {
-    std::string temp;
+vector<string> Utilities::Split(string _inp, char DELIMITER) const {
+    string temp;
     std::istringstream ss(_inp);
-    vector<std::string> retV;
+    vector<string> retV;
 
     while (std::getline(ss, temp, DELIMITER)) {
         retV.emplace_back(temp);
@@ -19,19 +25,19 @@ vector<std::string> Utilities::Split(std::string _inp, char DELIMITER) const {
     return retV;
 }
 
-vector<int> Utilities::ToIntegers(vector<std::string> _inp) {
+vector<int> Utilities::ToIntegers(vector<string> _inp) {
     vector <int> retV;
     for (auto && _tmp : _inp) {
-        retV.push_back(atoi(_tmp.c_str()));
+        retV.emplace_back(atoi(_tmp.c_str()));
     }
 
     return retV;
 }
 
-vector<int64_t> Utilities::ToLongV(vector<std::string> _inp) {
+vector<int64_t> Utilities::ToLongV(vector<string> _inp) {
     vector <int64_t> retV;
     for (auto && _tmp : _inp) {
-        retV.push_back(atol(_tmp.c_str()));
+        retV.emplace_back(atol(_tmp.c_str()));
     }
 
     return retV;
@@ -46,7 +52,7 @@ std::set<int> Utilities::GetNumberRange(int begin, int end) const {
     return numRange;
 }
 
-bool Utilities::StringContainsString(const std::string & inpStr, const std::string & tmp) const {
+bool Utilities::StringContainsString(const string & inpStr, const string & tmp) const {
     return (inpStr.find(tmp) != string::npos);
 }
 
@@ -88,7 +94,7 @@ int Utilities::ToAscii(int _inp) const {
     return '0' + _inp;
 }
 
-std::tuple<std::string, std::string> Utilities::SplitStringExactHalf(const std::string & inp) {
+std::tuple<string, string> Utilities::SplitStringExactHalf(const string & inp) {
     size_t inpLength = inp.size();
     auto part1 = inp.substr(0, inpLength/2);
     auto part2 = inp.substr(inpLength/2);
@@ -96,13 +102,14 @@ std::tuple<std::string, std::string> Utilities::SplitStringExactHalf(const std::
     return std::make_tuple(part1, part2);
 }
 
-std::list <string> Utilities::SimpleFileRead(const std::string &_fname) {
+std::list <string> Utilities::SimpleFileRead(string_view _fname) {
     std::list <string> lines;
+    auto tmpPath = fs::relative(_fname);
 
-    if (std::ifstream myfile(_fname.c_str()); myfile.is_open()) { // NOLINT [-Wc++17-extensions]
+    if (std::ifstream myfile(tmpPath); myfile.is_open()) { // NOLINT [-Wc++17-extensions]
         string line;
         while (getline(myfile, line)) {
-            lines.push_back(line);
+            lines.emplace_back(line);
         }
         myfile.close();
     } else {
@@ -113,7 +120,7 @@ std::list <string> Utilities::SimpleFileRead(const std::string &_fname) {
     return lines;
 }
 
-std::set <char> Utilities::getCommonCharacters(const std::string &_str1, const std::string &_str2) {
+std::set <char> Utilities::getCommonCharacters(string_view _str1, string_view _str2) {
     std::set <char> result;
 
     for (const char &chr : _str1) {
@@ -125,9 +132,9 @@ std::set <char> Utilities::getCommonCharacters(const std::string &_str1, const s
     return result;
 }
 
-std::string Utilities::PrependZeros(std::string _tmp, int _length) {
+string Utilities::PrependZeros(string_view _tmp, int _length) {
     int diff = _length - static_cast<int>(_tmp.length());
-    std::string newStr = _tmp;
+    string newStr{_tmp};
 
     for (int cnt = 1; cnt <= diff; cnt++) {
         newStr = "0" + newStr;
@@ -136,8 +143,7 @@ std::string Utilities::PrependZeros(std::string _tmp, int _length) {
     return newStr;
 }
 
-void Utilities::GetPermutations(std::string str, std::string out,
-                                vector <std::string> & permutations) {
+void Utilities::GetPermutations(string str, string out, vector <string> & permutations) {
     if (str.size() == 0) {
         permutations.push_back(out);
         return;
@@ -149,7 +155,7 @@ void Utilities::GetPermutations(std::string str, std::string out,
     }
 }
 
-bool Utilities::ContainsUniqueCharacters(const std::string & tmp) {
+bool Utilities::ContainsUniqueCharacters(string_view tmp) {
     std::set<char> loc = {tmp.begin(), tmp.end()};
     return tmp.size() == loc.size();
 }

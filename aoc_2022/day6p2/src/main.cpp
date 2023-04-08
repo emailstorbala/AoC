@@ -53,7 +53,7 @@ string ParseProgramArguments(const int argc, const char *argv[]) {
     return filename;
 }
 
-std::list<string> ReadInputFile(string inpfile) {
+std::list<string> ReadInputFile(const std::string &inpfile) {
     Utilities utils;
     return utils.SimpleFileRead(inpfile);
 }
