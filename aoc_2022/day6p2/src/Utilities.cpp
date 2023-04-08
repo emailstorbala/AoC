@@ -104,7 +104,7 @@ std::tuple<string, string> Utilities::SplitStringExactHalf(const string & inp) {
 
 std::list <string> Utilities::SimpleFileRead(string_view _fname) {
     std::list <string> lines;
-    auto tmpPath = fs::relative(_fname);
+    auto tmpPath = fs::path(_fname);
 
     if (std::ifstream myfile(tmpPath); myfile.is_open()) { // NOLINT [-Wc++17-extensions]
         string line;
