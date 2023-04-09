@@ -1,11 +1,15 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
 #include "Utilities.h"
+#include <cstddef>
+#include <fmt/core.h>
 #include <ranges>
 #include <fstream>
+#include <span>
 #include <sstream>
 #include <algorithm>
 #include <fmt/format.h>
 #include <filesystem>
+#include <string>
 
 namespace fs = std::filesystem;
 

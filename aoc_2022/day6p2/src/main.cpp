@@ -59,19 +59,14 @@ std::list<string> ReadInputFile(const std::string &inpfile) {
 }
 
 int GetMarkerCharacter(const string &inpStr) {
-    size_t inpStrLen = inpStr.size();
-    Utilities utils;
     const int cmpStrLen = 14;
     int uniqCharPos = 0;
 
-    for (size_t pos = 0; (pos + cmpStrLen) < inpStrLen; pos++) {
-        string locStr = {inpStr.begin() + pos,
-                         inpStr.begin() + pos + cmpStrLen};
+    for (size_t pos = 0; (pos + cmpStrLen) < inpStr.size(); pos++) {
+        string locStr = {inpStr.begin() + pos, inpStr.begin() + pos + cmpStrLen};
         // fmt::print("locStr -> {}\n", locStr);
-        bool isUniq = utils.ContainsUniqueCharacters(locStr);
-        // fmt::print("{} is isUniq->{}\n", locStr, isUniq);
-
-        if (isUniq) {
+        Utilities utils;
+        if (utils.ContainsUniqueCharacters(locStr)) {
             // fmt::print("New char pos->{}\n", pos + cmpStrLen);
             uniqCharPos = pos + cmpStrLen;
             break;
@@ -83,8 +78,7 @@ int GetMarkerCharacter(const string &inpStr) {
 
 int main(int argc, const char *argv[]) {
     auto start = chrono::system_clock::now();
-    auto &&fname =
-        ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
+    auto &&fname = ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
     for (const string &line : ReadInputFile(fname)) {
         int res = GetMarkerCharacter(line);
         fmt::print("The result is {}\n", res);
