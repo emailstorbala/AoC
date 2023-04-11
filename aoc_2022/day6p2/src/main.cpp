@@ -9,6 +9,7 @@
 #include <fmt/format.h>
 #include <functional>
 #include <iostream>
+#include <string_view>
 #include <stdexcept>
 #include <tuple>
 #include <utility>
@@ -53,7 +54,7 @@ string ParseProgramArguments(const int argc, const char *argv[]) {
     return filename;
 }
 
-std::list<string> ReadInputFile(const std::string &inpfile) {
+std::list<string> ReadInputFile(std::string_view inpfile) {
     Utilities utils;
     return utils.SimpleFileRead(inpfile);
 }
