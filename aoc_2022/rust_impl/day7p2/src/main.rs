@@ -21,7 +21,6 @@ fn get_directory_size(dir: &str, dir_dtls_map: &HashMap<String, Vec<String>>) ->
                 .split_whitespace()
                 .nth(1)
                 .unwrap()
-                .to_owned()
                 .to_string();
             let abs_dir: String = if dir.ends_with('/') {
                 format!("{dir}{tmp_dir}")
