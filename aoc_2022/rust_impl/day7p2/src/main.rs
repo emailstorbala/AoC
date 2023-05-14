@@ -19,29 +19,24 @@ fn get_directory_size(dir: &str, dir_dtls_map: &HashMap<String, Vec<String>>) ->
     let dir_dtls: Vec<String> = dir_dtls_map.get(dir).unwrap().to_vec();
 
     for item in dir_dtls {
-        if item.starts_with("dir ") {
+        dir_size += if item.starts_with("dir ") {
             // Directory case
-            let tmp_dir: String = item
-                .split_whitespace()
-                .nth(1)
-                .unwrap()
-                .to_string();
+            let tmp_dir: String = item.split_whitespace().nth(1).unwrap().to_string();
             let abs_dir: String = if dir.ends_with('/') {
                 format!("{dir}{tmp_dir}")
             } else {
                 format!("{dir}/{tmp_dir}")
             };
 
-            dir_size += get_directory_size(&abs_dir, dir_dtls_map);
+            get_directory_size(&abs_dir, dir_dtls_map)
         } else {
             // File case
-            let file_size: u64 = item
-                .split_whitespace()
+            // Get file size from the input record
+            item.split_whitespace()
                 .nth(0)
                 .unwrap()
                 .parse::<u64>()
-                .unwrap();
-            dir_size += file_size;
+                .unwrap()
         }
     }
 
@@ -75,11 +70,11 @@ fn read_contents(content: String) -> HashMap<String, Vec<String>> {
                     "/" => {
                         curr_dir = "/".to_string();
                         dir_stack.push(curr_dir.clone());
-                    },
+                    }
                     ".." => {
                         dir_stack.pop().unwrap();
                         curr_dir = dir_stack[dir_stack.len() - 1].to_string();
-                    },
+                    }
                     _ => {
                         curr_dir = if prev_dir.ends_with("/") {
                             format!("{prev_dir}{tmp_dir}")
@@ -94,7 +89,7 @@ fn read_contents(content: String) -> HashMap<String, Vec<String>> {
         }
 
         // println!("list content line is {line}");
-        dir_dtls.push(line.to_owned().to_string());
+        dir_dtls.push(line.to_string());
     }
 
     if !dir_dtls.is_empty() {
