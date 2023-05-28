@@ -35,7 +35,7 @@ fn get_directory_size(dir: &str, dir_dtls_map: &HashMap<String, Vec<String>>) ->
             item.split_whitespace()
                 .nth(0)
                 .unwrap()
-                .parse::<u64>()
+                .parse()
                 .unwrap()
         }
     }
@@ -128,4 +128,17 @@ fn main() {
 
     let duration = start_time.elapsed();
     println!("Total time taken -> {:?} ", duration);
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_read_contents() {
+        let tmp: String = "$ cd /\n$ ls\ndir test\n$ cd test\n$ ls\n1000 1.txt".to_string();
+        let tmp_res = read_contents(tmp);
+        assert_eq!(tmp_res.len(), 2);
+    }
 }
