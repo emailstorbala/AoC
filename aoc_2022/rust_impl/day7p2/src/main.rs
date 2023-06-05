@@ -65,8 +65,8 @@ fn read_contents(content: String) -> HashMap<String, Vec<String>> {
 
                 // Change directory
                 let prev_dir: String = curr_dir.to_owned();
-                let tmp_dir: String = line.split_whitespace().nth(2).unwrap().to_string();
-                match tmp_dir.as_str() {
+                let tmp_dir: &str = line.split_whitespace().nth(2).unwrap();
+                match tmp_dir {
                     "/" => {
                         curr_dir = "/".to_string();
                         dir_stack.push(curr_dir.clone());
