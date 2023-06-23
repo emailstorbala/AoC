@@ -1,6 +1,5 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
-#ifndef __SRC_UTILITIES_H__
-#define __SRC_UTILITIES_H__
+#pragma once
 #include <map>
 #include <vector>
 #include <set>
@@ -30,4 +29,3 @@ class Utilities {
                              std::vector <std::string> & permutations);
         bool ContainsUniqueCharacters(std::string_view tmp);
 };
-#endif  // __SRC_UTILITIES_H__
