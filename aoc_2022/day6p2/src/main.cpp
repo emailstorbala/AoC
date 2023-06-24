@@ -22,8 +22,6 @@ using boost::program_options::store;
 using boost::program_options::value;
 using boost::program_options::variables_map;
 
-using std::cout;
-using std::endl;
 using std::string;
 
 namespace chrono = std::chrono;
@@ -40,14 +38,14 @@ string ParseProgramArguments(const int argc, const char *argv[]) {
         store(parse_command_line(argc, argv, prgDesc), vm);
 
         if (vm.count("help") || vm.count("h")) {
-            cout << prgDesc << endl;
+            prgDesc.print(std::cout);
             exit(0);
         }
 
         notify(vm);
     } catch (const error &ex) {
         fmt::print(stderr, "Exception: {}\n", ex.what());
-        cout << prgDesc << endl;
+        prgDesc.print(std::cout);
         exit(3);
     }
 
@@ -87,7 +85,7 @@ int main(int argc, const char *argv[]) {
 
     auto end = chrono::system_clock::now();
     auto dur = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    cout << "Time taken: " << float(dur / 1000.0) << " mu.secs" << endl;
+    fmt::print("Time take: {} µ.sec\n", (dur/1000.0));
 
     return EXIT_SUCCESS;
 }
