@@ -6,3 +6,4 @@
 ## Day4 completed (Rust and C++)
 ## Day5 completed (Rust and C++)
 ## Day6 completed (Rust and C++)
+## Day7 completed in Rust
