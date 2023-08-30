@@ -1,7 +1,7 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
 #include "Utilities.h"
 #include <boost/program_options.hpp>
-#include <chrono> // NOLINT [build/c++11]
+#include <chrono>
 #include <exception>
 #include <fmt/format.h>
 #include <iostream>
@@ -50,35 +50,19 @@ std::list<string> ReadInputFile(std::string_view inpfile) {
     return utils.SimpleFileRead(inpfile);
 }
 
-int GetMarkerCharacter(const string &inpStr) {
-    const int cmpStrLen = 14;
-    size_t uniqCharPos = string::npos;
-
-    for (size_t pos = 0; (pos + cmpStrLen) < inpStr.size(); pos++) {
-        string locStr = {inpStr.begin() + pos, inpStr.begin() + pos + cmpStrLen};
-        // fmt::print("locStr -> {}\n", locStr);
-        if (Utilities utils; utils.ContainsUniqueCharacters(locStr)) {
-            // fmt::print("New char pos->{}\n", pos + cmpStrLen);
-            uniqCharPos = pos + cmpStrLen;
-            break;
-        }
-    }
-
-    return uniqCharPos;
-}
-
 int main(int argc, const char *argv[]) {
     auto start = chrono::steady_clock::now();
-    auto &&fname = ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
+    auto &&fname = ParseProgramArguments(argc, argv);
     for (const string &line : ReadInputFile(fname)) {
-        if (size_t res = GetMarkerCharacter(line); res != string::npos) {
+        Utilities utils;
+        if (size_t res = utils.GetMarkerCharacter(line); res != string::npos) {
             fmt::print("The result is {}\n", res);
         }
     }
 
     auto end = chrono::steady_clock::now();
     auto dur = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    fmt::print("Time take: {} µ.sec\n", (dur/1000.0));
+    fmt::print("Time taken: {} µ.sec\n", (dur / 1000.0));
 
     return EXIT_SUCCESS;
 }

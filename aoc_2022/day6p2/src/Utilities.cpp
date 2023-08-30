@@ -1,14 +1,14 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
 #include "Utilities.h"
+#include <algorithm>
 #include <cstddef>
+#include <filesystem>
 #include <fmt/core.h>
-#include <ranges>
+#include <fmt/format.h>
 #include <fstream>
+#include <ranges>
 #include <span>
 #include <sstream>
-#include <algorithm>
-#include <fmt/format.h>
-#include <filesystem>
 #include <string>
 
 namespace fs = std::filesystem;
@@ -30,8 +30,8 @@ vector<string> Utilities::Split(string _inp, char DELIMITER) const {
 }
 
 vector<int> Utilities::ToIntegers(vector<string> _inp) {
-    vector <int> retV;
-    for (auto && _tmp : _inp) {
+    vector<int> retV;
+    for (auto &&_tmp : _inp) {
         retV.emplace_back(atoi(_tmp.c_str()));
     }
 
@@ -39,8 +39,8 @@ vector<int> Utilities::ToIntegers(vector<string> _inp) {
 }
 
 vector<int64_t> Utilities::ToLongV(vector<string> _inp) {
-    vector <int64_t> retV;
-    for (auto && _tmp : _inp) {
+    vector<int64_t> retV;
+    for (auto &&_tmp : _inp) {
         retV.emplace_back(atol(_tmp.c_str()));
     }
 
@@ -48,41 +48,44 @@ vector<int64_t> Utilities::ToLongV(vector<string> _inp) {
 }
 
 std::set<int> Utilities::GetNumberRange(int begin, int end) const {
-    std::set <int> numRange;
-    for (int i : std::views::iota(begin, end+1)) {
+    std::set<int> numRange;
+    for (int i : std::views::iota(begin, end + 1)) {
         numRange.emplace(i);
     }
 
     return numRange;
 }
 
-bool Utilities::StringContainsString(const string & inpStr, const string & tmp) const {
+bool Utilities::StringContainsString(const string &inpStr,
+                                     const string &tmp) const {
     return (inpStr.find(tmp) != string::npos);
 }
 
-bool Utilities::SetContainsSet(std::set<int> set1,  std::set<int> set2) const {
+bool Utilities::SetContainsSet(std::set<int> set1, std::set<int> set2) const {
     // This checks and returns whether set1 contains set2
     return std::includes(set1.begin(), set1.end(), set2.begin(), set2.end());
 }
 
-bool Utilities::DoSetsHaveOverlapItems(std::set<int> set1, std::set<int> set2) const {
+bool Utilities::DoSetsHaveOverlapItems(std::set<int> set1,
+                                       std::set<int> set2) const {
     bool hasOverlapItems = false;
-    for (const int & set1_item : set1) {
-        for (const int & set2_item : set2) {
+    for (const int &set1_item : set1) {
+        for (const int &set2_item : set2) {
             if (set1_item == set2_item) {
                 hasOverlapItems = true;
             }
         }
 
-        if (hasOverlapItems) break;
+        if (hasOverlapItems)
+            break;
     }
 
     return hasOverlapItems;
 }
 
-vector<char> Utilities::ConcatenateVectors(const vector<char> & vec1,
-                                           const vector<char> & vec2) const {
-    vector <char> retVec;
+vector<char> Utilities::ConcatenateVectors(const vector<char> &vec1,
+                                           const vector<char> &vec2) const {
+    vector<char> retVec;
     retVec.insert(retVec.end(), vec1.begin(), vec1.end());
     retVec.insert(retVec.end(), vec2.begin(), vec2.end());
 
@@ -94,38 +97,39 @@ int Utilities::ToInteger(char _chr) const {
     return ret;
 }
 
-int Utilities::ToAscii(int _inp) const {
-    return '0' + _inp;
-}
+int Utilities::ToAscii(int _inp) const { return '0' + _inp; }
 
-std::tuple<string, string> Utilities::SplitStringExactHalf(const string & inp) {
+std::tuple<string, string> Utilities::SplitStringExactHalf(const string &inp) {
     size_t inpLength = inp.size();
-    auto part1 = inp.substr(0, inpLength/2);
-    auto part2 = inp.substr(inpLength/2);
+    auto part1 = inp.substr(0, inpLength / 2);
+    auto part2 = inp.substr(inpLength / 2);
 
     return std::make_tuple(part1, part2);
 }
 
-std::list <string> Utilities::SimpleFileRead(string_view _fname) {
-    std::list <string> lines;
+std::list<string> Utilities::SimpleFileRead(string_view _fname) {
+    std::list<string> lines;
     auto tmpPath = fs::path(_fname);
 
-    if (std::ifstream myfile(tmpPath); myfile.is_open()) { // NOLINT [-Wc++17-extensions]
+    if (std::ifstream myfile(tmpPath);
+        myfile.is_open()) { // NOLINT [-Wc++17-extensions]
         string line;
         while (getline(myfile, line)) {
             lines.emplace_back(line);
         }
         myfile.close();
     } else {
-        throw std::runtime_error(fmt::format("Unable to open file '{}'!", _fname));
+        throw std::runtime_error(
+            fmt::format("Unable to open file '{}'!", _fname));
         exit(2);
     }
 
     return lines;
 }
 
-std::set <char> Utilities::getCommonCharacters(string_view _str1, string_view _str2) {
-    std::set <char> result;
+std::set<char> Utilities::getCommonCharacters(string_view _str1,
+                                              string_view _str2) {
+    std::set<char> result;
 
     for (const char &chr : _str1) {
         if (_str2.find(chr) != string::npos) {
@@ -147,7 +151,8 @@ string Utilities::PrependZeros(string_view _tmp, int _length) {
     return newStr;
 }
 
-void Utilities::GetPermutations(string str, string out, vector <string> & permutations) {
+void Utilities::GetPermutations(string str, string out,
+                                vector<string> &permutations) {
     if (str.size() == 0) {
         permutations.push_back(out);
         return;
@@ -162,4 +167,22 @@ void Utilities::GetPermutations(string str, string out, vector <string> & permut
 bool Utilities::ContainsUniqueCharacters(string_view tmp) {
     std::set<char> loc = {tmp.begin(), tmp.end()};
     return tmp.size() == loc.size();
+}
+
+int Utilities::GetMarkerCharacter(const string &inpStr) {
+    const int cmpStrLen = 14;
+    size_t uniqCharPos = string::npos;
+
+    for (size_t pos = 0; (pos + cmpStrLen) < inpStr.size(); pos++) {
+        string locStr = {inpStr.begin() + pos,
+                         inpStr.begin() + pos + cmpStrLen};
+        // fmt::print("locStr -> {}\n", locStr);
+        if (Utilities utils; utils.ContainsUniqueCharacters(locStr)) {
+            // fmt::print("New char pos->{}\n", pos + cmpStrLen);
+            uniqCharPos = pos + cmpStrLen;
+            break;
+        }
+    }
+
+    return uniqCharPos;
 }
