@@ -1,11 +1,11 @@
-#include "Utilities.h"
+#include "AocUtils.h"
 #include <gtest/gtest.h>
 
 int GetMarkerCharacter(const std::string &inpStr);
 
-TEST(AocTest, GetMarkerCharacter) {
+TEST(AocUtilsTest, GetMarkerCharacter) {
   std::string mystr = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
-  Utilities utils;
+  AocUtils utils;
   EXPECT_EQ(19, utils.GetMarkerCharacter(mystr));
 }
 

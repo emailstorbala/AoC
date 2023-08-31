@@ -1,5 +1,6 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
 #include "Utilities.h"
+#include "AocUtils.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <exception>
@@ -54,8 +55,8 @@ int main(int argc, const char *argv[]) {
     auto start = chrono::steady_clock::now();
     auto &&fname = ParseProgramArguments(argc, argv);
     for (const string &line : ReadInputFile(fname)) {
-        Utilities utils;
-        if (size_t res = utils.GetMarkerCharacter(line); res != string::npos) {
+        AocUtils aocUtils;
+        if (size_t res = aocUtils.GetMarkerCharacter(line); res != string::npos) {
             fmt::print("The result is {}\n", res);
         }
     }
