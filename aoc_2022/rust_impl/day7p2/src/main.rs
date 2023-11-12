@@ -44,8 +44,7 @@ fn get_directory_size(dir: &str, dir_dtls_map: &HashMap<String, Vec<String>>) ->
 }
 
 fn read_contents(content: String) -> HashMap<String, Vec<String>> {
-    let mut curr_dir: String = "".to_string();
-
+    let mut curr_dir: String = String::new();
     let mut dir_dtls: Vec<String> = Vec::new();
     let mut dir_dtls_map: HashMap<String, Vec<String>> = HashMap::new();
     let mut dir_stack: Vec<String> = Vec::new();
@@ -103,7 +102,7 @@ fn get_dirs_to_match_expected(args: Args, dir_dtls_map: &HashMap<String, Vec<Str
     let total_disk_size: u64 = args.total_disk_size;
     let expected_disk_free: u64 = args.expected_disk_free;
     let current_disk_free: u64 = total_disk_size - get_directory_size("/", dir_dtls_map);
-    let mut matching_dir_sizes: Vec<u64> = [].to_vec();
+    let mut matching_dir_sizes: Vec<u64> = Vec::new();
 
     for (dir_name, _) in dir_dtls_map {
         let dir_size: u64 = get_directory_size(&dir_name, dir_dtls_map);
