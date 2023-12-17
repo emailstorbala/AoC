@@ -50,29 +50,21 @@ fn read_contents(content: String) -> i64 {
             let chunk: String = mod_line[start_cnt..].to_string();
             if one_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("one", "1", 1);
-            }
-            if two_re.is_match(chunk.as_str()) {
+            } else if two_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("two", "2", 1);
-            }
-            if three_re.is_match(chunk.as_str()) {
+            } else if three_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("three", "3", 1);
-            }
-            if four_re.is_match(chunk.as_str()) {
+            } else if four_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("four", "4", 1);
-            }
-            if five_re.is_match(chunk.as_str()) {
+            } else if five_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("five", "5", 1);
-            }
-            if six_re.is_match(chunk.as_str()) {
+            } else if six_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("six", "6", 1);
-            }
-            if seven_re.is_match(chunk.as_str()) {
+            } else if seven_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("seven", "7", 1);
-            }
-            if eight_re.is_match(chunk.as_str()) {
+            } else if eight_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("eight", "8", 1);
-            }
-            if nine_re.is_match(chunk.as_str()) {
+            } else if nine_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("nine", "9", 1);
             }
 
