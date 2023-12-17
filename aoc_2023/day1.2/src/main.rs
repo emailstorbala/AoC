@@ -10,26 +10,31 @@ struct Args {
     file_name: String,
 }
 
-fn get_clb_details(content_details: Vec<String>) -> Vec<String> {
-    let mut clb_dtls: Vec<String> = Vec::new();
+fn get_clb_details(content_details: Vec<String>) -> i64 {
+    let mut clb_total: i64 = 0;
     for line in content_details {
-        let mut num_str = String::new();
-
-        for chr in line.chars() {
-            if chr.is_numeric() {
-                num_str.push(chr);
-            }
-        }
-
-        println!("num_str is {num_str}");
-        clb_dtls.push(num_str);
+        let num_iter = line.chars().filter(|chr| chr.is_numeric());
+        let first_num = num_iter.clone().nth(0).unwrap().to_digit(10).unwrap();
+        let last_num = num_iter.last().unwrap().to_digit(10).unwrap();
+        let clb = first_num * 10 + last_num;
+        println!("clb is {clb}");
+        clb_total += clb as i64
     }
-    clb_dtls
+    clb_total 
 }
 
 fn read_contents(content: String) -> i64 {
-    let mut clb_total: i64 = 0;
     let mut content_details: Vec<String> = Vec::new();
+
+    let one_re = Regex::new(r"(^one).*").unwrap();
+    let two_re = Regex::new(r"(^two).*").unwrap();
+    let three_re = Regex::new(r"(^three).*").unwrap();
+    let four_re = Regex::new(r"(^four).*").unwrap();
+    let five_re = Regex::new(r"(^five).*").unwrap();
+    let six_re = Regex::new(r"(^six).*").unwrap();
+    let seven_re = Regex::new(r"(^seven).*").unwrap();
+    let eight_re = Regex::new(r"(^eight).*").unwrap();
+    let nine_re = Regex::new(r"(^nine).*").unwrap();
 
     for line in content.split('\n') {
         if line.is_empty() { break };
@@ -37,17 +42,10 @@ fn read_contents(content: String) -> i64 {
         let mut mod_line: String = line.to_string();
         let mut start_cnt: usize = 0;
         while start_cnt <= mod_line.len() {
-            let one_re = Regex::new(r"^one.*").unwrap();
-            let two_re = Regex::new(r"^two.*").unwrap();
-            let three_re = Regex::new(r"^three.*").unwrap();
-            let four_re = Regex::new(r"^four.*").unwrap();
-            let five_re = Regex::new(r"^five.*").unwrap();
-            let six_re = Regex::new(r"^six.*").unwrap();
-            let seven_re = Regex::new(r"^seven.*").unwrap();
-            let eight_re = Regex::new(r"^eight.*").unwrap();
-            let nine_re = Regex::new(r"^nine.*").unwrap();
-
             let chunk: String = mod_line[start_cnt..].to_string();
+            // Line less than smallest string number E.g: one
+            if chunk.len() < 3 { break };
+
             if one_re.is_match(chunk.as_str()) {
                 mod_line = mod_line.replacen("one", "1", 1);
             } else if two_re.is_match(chunk.as_str()) {
@@ -73,13 +71,8 @@ fn read_contents(content: String) -> i64 {
         content_details.push(mod_line);
     }
 
-    let clb_dtls: Vec<String> = get_clb_details(content_details);
-    for num_str in clb_dtls {
-        let item_no: i64 = num_str.chars().nth(0).unwrap().to_digit(10).unwrap() as i64 * 10 + num_str.chars().last().unwrap().to_digit(10).unwrap() as i64;
-        clb_total += item_no;
-    }
-
-    clb_total 
+    let clb_total = get_clb_details(content_details);
+    clb_total
 }
 
 fn main() {
