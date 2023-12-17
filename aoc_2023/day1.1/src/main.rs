@@ -25,22 +25,12 @@ fn read_contents(content: String) -> i64 {
             }
         }
 
-        println!("num_str is {num_str}");
         clb_dtls.push(num_str);
     }
 
-    for mut num_str in clb_dtls {
-        if num_str.len() == 2 {
-            clb_total += num_str.parse::<i64>().unwrap();
-        } else if num_str.len() == 1 {
-            num_str.push(num_str.chars().nth(0).unwrap());
-            clb_total += num_str.parse::<i64>().unwrap();
-        } else if num_str.len() > 2 {
-            let mut tmp_str = String::new();
-            tmp_str.push(num_str.chars().nth(0).unwrap());
-            tmp_str.push(num_str.chars().last().unwrap());
-            clb_total += tmp_str.parse::<i64>().unwrap();
-        }
+    for num_str in clb_dtls {
+        let item_no: i64 = num_str.chars().nth(0).unwrap().to_digit(10).unwrap() as i64 * 10 + num_str.chars().last().unwrap().to_digit(10).unwrap() as i64;
+        clb_total += item_no as i64;
     }
 
     clb_total 

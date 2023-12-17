@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::{fs};
+use std::fs;
 use std::time::Instant;
 use regex::Regex;
 
@@ -12,6 +12,7 @@ struct Args {
 
 fn read_contents(content: String) -> i64 {
     let mut clb_total: i64 = 0;
+    let mut clb_dtls: Vec<String> = Vec::new();
     let mut content_details: Vec<String> = Vec::new();
 
     for line in content.split('\n') {
@@ -19,11 +20,8 @@ fn read_contents(content: String) -> i64 {
 
         let mut mod_line: String = line.to_string();
         let mut start_cnt: usize = 0;
-        while start_cnt+5 <= mod_line.len() {
-            println!("start_cnt->{start_cnt}");
-            println!("mod_line is {mod_line}");
+        while start_cnt <= mod_line.len() {
             let chunk: String = mod_line[start_cnt..].to_string();
-            println!("chunk val->{chunk}");
             let zero_re = Regex::new(r"^zero.*").unwrap();
             let one_re = Regex::new(r"^one.*").unwrap();
             let two_re = Regex::new(r"^two.*").unwrap();
@@ -76,49 +74,37 @@ fn read_contents(content: String) -> i64 {
                 continue;
             }
 
-            println!("mod_line is {mod_line}");
             start_cnt += 1;
         }
-        println!("Before push: mod_line is {mod_line}");
-        println!("------------------");
         content_details.push(mod_line.clone());
     }
 
-    for mod_line in content_details {
+    for mod_line in &content_details {
         println!("mod_line: {mod_line}");
     }
 
-    // for line in content.split('\n') {
-    //     if line.is_empty() {
-    //         break;
-    //     }
-    //
-    //     let mut num_str = String::new();
-    //
-    //     for chr in line.chars() {
-    //         if chr.is_numeric() {
-    //             num_str.push(chr);
-    //         }
-    //     }
-    //
-    //     println!("num_str is {num_str}");
-    //     clb_dtls.push(num_str);
-    // }
-    //
-    // for mut num_str in clb_dtls {
-    //     if num_str.len() == 2 {
-    //         clb_total += num_str.parse::<i64>().unwrap();
-    //     } else if num_str.len() == 1 {
-    //         num_str.push(num_str.chars().nth(0).unwrap());
-    //         clb_total += num_str.parse::<i64>().unwrap();
-    //     } else if num_str.len() > 2 {
-    //         let mut tmp_str = String::new();
-    //         tmp_str.push(num_str.chars().nth(0).unwrap());
-    //         tmp_str.push(num_str.chars().last().unwrap());
-    //         clb_total += tmp_str.parse::<i64>().unwrap();
-    //     }
-    // }
-    //
+    for line in content_details {
+        if line.is_empty() {
+            break;
+        }
+
+        let mut num_str = String::new();
+
+        for chr in line.chars() {
+            if chr.is_numeric() {
+                num_str.push(chr);
+            }
+        }
+
+        println!("num_str is {num_str}");
+        clb_dtls.push(num_str);
+    }
+
+    for num_str in clb_dtls {
+        let item_no: i64 = num_str.chars().nth(0).unwrap().to_digit(10).unwrap() as i64 * 10 + num_str.chars().last().unwrap().to_digit(10).unwrap() as i64;
+        clb_total += item_no as i64;
+    }
+
     clb_total 
 }
 
