@@ -17,7 +17,6 @@ fn get_clb_details(content_details: Vec<String>) -> i64 {
         let first_num = num_iter.clone().nth(0).unwrap().to_digit(10).unwrap();
         let last_num = num_iter.last().unwrap().to_digit(10).unwrap();
         let clb = first_num * 10 + last_num;
-        println!("clb is {clb}");
         clb_total += clb as i64
     }
     clb_total 
@@ -39,31 +38,33 @@ fn read_contents(content: String) -> i64 {
     for line in content.split('\n') {
         if line.is_empty() { break };
 
-        let mut mod_line: String = line.to_string();
+        let mut mod_line: String = String::new();
         let mut start_cnt: usize = 0;
-        while start_cnt <= mod_line.len() {
-            let chunk: String = mod_line[start_cnt..].to_string();
+        while start_cnt < line.len() {
+            let chunk: String = line[start_cnt..].to_string();
             // Line less than smallest string number E.g: one
-            if chunk.len() < 3 { break };
 
             if one_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("one", "1", 1);
+                mod_line.push('1');
             } else if two_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("two", "2", 1);
+                mod_line.push('2');
             } else if three_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("three", "3", 1);
+                mod_line.push('3');
             } else if four_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("four", "4", 1);
+                mod_line.push('4');
             } else if five_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("five", "5", 1);
+                mod_line.push('5');
             } else if six_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("six", "6", 1);
+                mod_line.push('6');
             } else if seven_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("seven", "7", 1);
+                mod_line.push('7');
             } else if eight_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("eight", "8", 1);
+                mod_line.push('8');
             } else if nine_re.is_match(chunk.as_str()) {
-                mod_line = mod_line.replacen("nine", "9", 1);
+                mod_line.push('9');
+            } else {
+                let chr = line.chars().nth(start_cnt).unwrap();
+                if chr.is_numeric() { mod_line.push(chr)};
             }
 
             start_cnt += 1;
