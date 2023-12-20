@@ -12,26 +12,31 @@ struct Args {
     row_size: String,
 }
 
+type Position = (usize, usize);
+type ContentMap = HashMap<Position, char>;
+type NumberAndPositions = HashMap<i64, Vec<Position>>;
+
 fn collect_numbers(
-    content_map: &HashMap<(usize, usize), char>,
+    content_map: &ContentMap,
     num_of_rows: usize,
-    row_size: usize,
-) -> HashMap<i32, Vec<(usize, usize)>> {
+    row_size: usize, // number of columns
+) -> NumberAndPositions {
     println!("num_of_rows is {num_of_rows}");
-    println!("num of colums is {row_size}");
-    let mut num_and_positions: HashMap<i32, Vec<(usize, usize)>> = Default::default();
+    println!("num of columns is {row_size}");
+    let mut num_and_positions: NumberAndPositions = Default::default();
     for row in 0..num_of_rows {
         let mut num_str: String = String::new();
-        let mut num_pos_list: Vec<(usize, usize)> = Default::default();
-        for pos in 0..row_size {
-            /* println!("Position fetched is ({}, {})", row, pos); */
-            let chr: char = *content_map.get(&(row, pos)).unwrap();
+        let mut num_pos_list: Vec<Position> = Default::default();
+        for col in 0..row_size {
+            /* println!("Position fetched is ({}, {})", row, col); */
+            let position: Position = (row, col);
+            let chr: char = *content_map.get(&position).unwrap();
             if chr.is_numeric() {
                 num_str.push(chr);
-                num_pos_list.push((row, pos));
+                num_pos_list.push(position);
             } else {
                 if !num_str.is_empty() {
-                    let number: i32 = num_str.parse::<i32>().unwrap();
+                    let number: i64 = num_str.parse::<i64>().unwrap();
                     num_and_positions.insert(number, num_pos_list.clone());
                     num_str.clear();
                     num_pos_list.clear();
@@ -43,140 +48,91 @@ fn collect_numbers(
     num_and_positions
 }
 
-fn check_positions_match(
-    positions: Vec<(usize, usize)>,
-    content_map: &HashMap<(usize, usize), char>,
-) -> bool {
+fn position_matches_symbol(content_map: &ContentMap, position: Position) -> bool {
     let mut matched: bool = false;
+    if content_map.contains_key(&position) {
+        let cell_char: char = *content_map.get(&position).unwrap();
 
-    for (row, pos) in positions {
-        // Left cell
-        let (left_row, left_pos) = (row, pos - 1);
-
-        if content_map.contains_key(&(left_row, left_pos)) {
-            let cell_char: char = *content_map.get(&(left_row, left_pos)).unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-        // right cell
-        let (right_row, right_pos) = (row, pos + 1);
-        if content_map.contains_key(&(right_row, right_pos)) {
-            let cell_char: char = *content_map.get(&(right_row, right_pos)).unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // diagonal topleft
-        let (diag_topleft_row, diag_topleft_pos) = (row - 1, pos - 1);
-        if content_map.contains_key(&(diag_topleft_row, diag_topleft_pos)) {
-            let cell_char: char = *content_map
-                .get(&(diag_topleft_row, diag_topleft_pos))
-                .unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // diagonal topright
-        let (diag_topright_row, diag_topright_pos) = (row - 1, pos + 1);
-        if content_map.contains_key(&(diag_topright_row, diag_topright_pos)) {
-            let cell_char: char = *content_map
-                .get(&(diag_topright_row, diag_topright_pos))
-                .unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // diagonal bottomright
-        let (diag_bottomright_row, diag_bottomright_pos) = (row + 1, pos + 1);
-        if content_map.contains_key(&(diag_bottomright_row, diag_bottomright_pos)) {
-            let cell_char: char = *content_map
-                .get(&(diag_bottomright_row, diag_bottomright_pos))
-                .unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // diagonal bottomleft
-        let (diag_bottomleft_row, diag_bottomleft_pos) = (row + 1, pos - 1);
-        if content_map.contains_key(&(diag_bottomleft_row, diag_bottomleft_pos)) {
-            let cell_char: char = *content_map
-                .get(&(diag_bottomleft_row, diag_bottomleft_pos))
-                .unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // above
-        let (above_row, above_pos) = (row - 1, pos);
-        if content_map.contains_key(&(above_row, above_pos)) {
-            let cell_char: char = *content_map.get(&(above_row, above_pos)).unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
-        }
-
-        // below
-        let (below_row, below_pos) = (row + 1, pos);
-        if content_map.contains_key(&(below_row, below_pos)) {
-            let cell_char: char = *content_map.get(&(below_row, below_pos)).unwrap();
-
-            // If cell_char is not alphanumeric and '.', we assume it should be symbol.
-            if !cell_char.is_alphanumeric() && cell_char != '.' {
-                matched = true;
-                break;
-            }
+        // If cell_char is not alphanumeric and '.', we assume it should be symbol.
+        if !cell_char.is_alphanumeric() && cell_char != '.' {
+            matched = true;
         }
     }
 
     matched
 }
 
-fn read_contents(content: String, row_size: usize) -> i32 {
-    let mut content_map: HashMap<(usize, usize), char> = Default::default();
-    let mut row_num: usize = 0;
+fn check_positions_match(positions: Vec<Position>, content_map: &ContentMap) -> bool {
+    for (row, col) in positions {
+        // Left cell
+        let left_cell = (row, col - 1);
+        if position_matches_symbol(&content_map, left_cell) {
+            return true;
+        };
+
+        // right cell
+        let right_cell = (row, col + 1);
+        if position_matches_symbol(&content_map, right_cell) {
+            return true;
+        }
+
+        // diagonal topleft cell
+        let diag_topleft_cell = (row - 1, col - 1);
+        if position_matches_symbol(&content_map, diag_topleft_cell) {
+            return true;
+        };
+
+        // diagonal topright cell
+        let diag_topright_cell = (row - 1, col + 1);
+        if position_matches_symbol(&content_map, diag_topright_cell) {
+            return true;
+        }
+
+        // diagonal bottomleft cell
+        let diag_bottomleft_cell = (row + 1, col - 1);
+        if position_matches_symbol(&content_map, diag_bottomleft_cell) {
+            return true;
+        }
+
+        // diagonal bottomright cell
+        let diag_bottomright_cell = (row + 1, col + 1);
+        if position_matches_symbol(&content_map, diag_bottomright_cell) {
+            return true;
+        }
+
+        // above cell
+        let above_cell = (row - 1, col);
+        if position_matches_symbol(&content_map, above_cell) {
+            return true;
+        }
+
+        // below cell
+        let below_cell = (row + 1, col);
+        if position_matches_symbol(&content_map, below_cell) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn read_contents(content: String, row_size: usize) -> i64 {
+    let mut content_map: ContentMap = Default::default();
+    let mut row: usize = 0;
     for line in content.split('\n') {
         if line.is_empty() {
             break;
         };
 
-        for pos in 0..row_size {
-            content_map.insert((row_num, pos), line.chars().nth(pos).unwrap());
+        for col in 0..row_size {
+            content_map.insert((row, col), line.chars().nth(col).unwrap());
         }
-        row_num += 1;
+        row += 1;
     }
 
-    let num_and_positions = collect_numbers(&content_map, row_num, row_size);
-    // for (number, positions) in num_and_positions {
-    //     println!("number, positions is ({number}, {:?}", positions);
-    // }
-    let mut total: i32 = 0;
+    /* Here row is passed as number of rows */
+    let num_and_positions = collect_numbers(&content_map, row, row_size);
+    let mut total: i64 = 0;
     for (number, positions) in num_and_positions {
         if check_positions_match(positions, &content_map) {
             println!("The matched number is {number}");
