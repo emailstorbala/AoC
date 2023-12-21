@@ -28,9 +28,9 @@ fn collect_numbers(
     println!("num_of_rows is {num_of_rows}");
     println!("num of columns is {row_size}");
     let mut number_list: NumberList = Vec::new();
+    let mut num_str: String = String::new();
+    let mut positions: Vec<Position> = Vec::new();
     for row in 0..num_of_rows {
-        let mut num_str: String = String::new();
-        let mut positions: Vec<Position> = Vec::new();
         for col in 0..row_size {
             /* println!("Position fetched is ({}, {})", row, col); */
             let position: Position = (row, col);
