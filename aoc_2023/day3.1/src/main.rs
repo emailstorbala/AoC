@@ -8,44 +8,52 @@ use std::{char, fs, usize};
 struct Args {
     #[arg(short, long)]
     file_name: String,
-    #[arg(short, long)]
-    row_size: String,
 }
 
 type Position = (usize, usize);
+type Positions = Vec<Position>;
 type ContentMap = HashMap<Position, char>;
-type NumberAndPositions = HashMap<i64, Vec<Position>>;
+struct NumberWithPositions {
+    number: i64,
+    positions: Positions,
+}
+
+type NumberList = Vec<NumberWithPositions>;
 
 fn collect_numbers(
     content_map: &ContentMap,
     num_of_rows: usize,
     row_size: usize, // number of columns
-) -> NumberAndPositions {
+) -> NumberList {
     println!("num_of_rows is {num_of_rows}");
     println!("num of columns is {row_size}");
-    let mut num_and_positions: NumberAndPositions = Default::default();
+    let mut number_list: NumberList = Vec::new();
     for row in 0..num_of_rows {
         let mut num_str: String = String::new();
-        let mut num_pos_list: Vec<Position> = Default::default();
+        let mut positions: Vec<Position> = Vec::new();
         for col in 0..row_size {
             /* println!("Position fetched is ({}, {})", row, col); */
             let position: Position = (row, col);
             let chr: char = *content_map.get(&position).unwrap();
             if chr.is_numeric() {
                 num_str.push(chr);
-                num_pos_list.push(position);
+                positions.push(position);
             } else {
                 if !num_str.is_empty() {
                     let number: i64 = num_str.parse::<i64>().unwrap();
-                    num_and_positions.insert(number, num_pos_list.clone());
+                    let number_with_positions = NumberWithPositions {
+                        number,
+                        positions: positions.clone(),
+                    };
+                    number_list.push(number_with_positions);
+                    positions.clear();
                     num_str.clear();
-                    num_pos_list.clear();
                 }
             }
         }
     }
 
-    num_and_positions
+    number_list
 }
 
 fn position_matches_symbol(content_map: &ContentMap, position: Position) -> bool {
@@ -55,6 +63,7 @@ fn position_matches_symbol(content_map: &ContentMap, position: Position) -> bool
 
         // If cell_char is not alphanumeric and '.', we assume it should be symbol.
         if !cell_char.is_alphanumeric() && cell_char != '.' {
+            println!("char is {cell_char}");
             matched = true;
         }
     }
@@ -116,14 +125,16 @@ fn check_positions_match(positions: Vec<Position>, content_map: &ContentMap) -> 
     false
 }
 
-fn read_contents(content: String, row_size: usize) -> i64 {
-    let mut content_map: ContentMap = Default::default();
+fn read_contents(content: String) -> i64 {
+    let mut content_map: ContentMap = HashMap::new();
     let mut row: usize = 0;
+    let mut row_size: usize = 0;
     for line in content.split('\n') {
         if line.is_empty() {
             break;
         };
 
+        row_size = line.len();
         for col in 0..row_size {
             content_map.insert((row, col), line.chars().nth(col).unwrap());
         }
@@ -131,9 +142,10 @@ fn read_contents(content: String, row_size: usize) -> i64 {
     }
 
     /* Here row is passed as number of rows */
-    let num_and_positions = collect_numbers(&content_map, row, row_size);
     let mut total: i64 = 0;
-    for (number, positions) in num_and_positions {
+    for number_with_positions in collect_numbers(&content_map, row, row_size) {
+        let number = number_with_positions.number;
+        let positions = number_with_positions.positions;
         if check_positions_match(positions, &content_map) {
             println!("The matched number is {number}");
             total += number;
@@ -148,7 +160,7 @@ fn main() {
     let start_time = Instant::now();
     let content: String = fs::read_to_string(&args.file_name).expect("Unable to load the file!");
 
-    let answer = read_contents(content, args.row_size.parse::<usize>().unwrap());
+    let answer = read_contents(content);
     println!("The answer is {answer}");
 
     let duration = start_time.elapsed();
