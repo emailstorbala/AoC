@@ -1,8 +1,8 @@
 use clap::Parser;
-use std::collections::HashMap;
-use std::time::Instant;
-use std::fs;
 use sscanf;
+use std::collections::HashMap;
+use std::fs;
+use std::time::Instant;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -26,21 +26,20 @@ fn read_contents(content: String) {
             break;
         };
 
-        let (card_info, win_data, our_data) = sscanf::sscanf!(line, "{&str}: {&str} | {&str}").unwrap();
+        let (card_info, win_data, our_data) =
+            sscanf::sscanf!(line, "{&str}: {&str} | {&str}").unwrap();
 
         let card_id_str: &str = sscanf::sscanf!(card_info, "Card {&str}").unwrap();
-        let card_id: i16 = card_id_str.trim().parse::<i16>().unwrap();
+        let card_id: i16 = card_id_str.trim().parse().unwrap();
         let mut win_numbers: Vec<i32> = Vec::new();
         let mut our_numbers: Vec<i32> = Vec::new();
 
         for win_num_str in win_data.split_whitespace() {
-            let win_num: i32 = win_num_str.parse::<i32>().unwrap();
-            win_numbers.push(win_num);
+            win_numbers.push(win_num_str.parse().unwrap());
         }
-        
+
         for our_num_str in our_data.split_whitespace() {
-            let our_num: i32 = our_num_str.parse::<i32>().unwrap();
-            our_numbers.push(our_num);
+            our_numbers.push(our_num_str.parse().unwrap());
         }
 
         let card_details = CardDetails {
@@ -54,13 +53,11 @@ fn read_contents(content: String) {
     let mut sel_won_details: HashMap<i16, Vec<i32>> = HashMap::new();
 
     for (card_id, card_details) in gift_card_details {
-        let mut sel_won_numbers: Vec<i32> = Vec::new();
-
-        for our_num in card_details.our_numbers {
-            if card_details.win_numbers.contains(&our_num) {
-                sel_won_numbers.push(our_num);
-            }
-        }
+        let sel_won_numbers = card_details
+            .win_numbers
+            .into_iter()
+            .filter(|won_num| card_details.our_numbers.contains(&won_num))
+            .collect();
         sel_won_details.insert(card_id, sel_won_numbers);
     }
 
