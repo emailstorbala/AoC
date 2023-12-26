@@ -155,9 +155,11 @@ fn main() {
 
     let seed_info = read_contents(content);
     let loc_list = get_location_list(&seed_info);
+    let min_loc = loc_list.iter().min().unwrap();
     println!("Seed seed_info is {:?}", seed_info.seeds);
     println!("Seed seed_to_soil_info is {:?}", seed_info.seed_to_soil_info);
     println!("loc_list is {:?}", loc_list);
+    println!("min loc is {min_loc}");
 
     let duration = start_time.elapsed();
     println!("Total time taken -> {:?} ", duration);
