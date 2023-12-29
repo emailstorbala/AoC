@@ -4,7 +4,7 @@ use core::panic;
 use std::sync::mpsc::channel;
 use std::{fs, i64};
 use std::time::Instant;
-use std::thread;
+use threadpool::ThreadPool;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -13,159 +13,66 @@ struct Args {
     file_name: String,
 }
 
-fn get_result_list(inp_list: std::ops::Range<i64>, seed_info: &SeedInfo) -> Vec<i64> {
+fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = Vec::new();
-    let mut tmp_list: Vec<i64> = Vec::new();
 
-    println!("Collecting soil list ...");
-    // Collect soil list
+    println!("Collecting list ...");
+    // Collect list
     for inp in inp_list {
-        let mut dest:i64 = inp;
-        for line in &seed_info.seed_to_soil_info {
+        let mut dest:i64 = *inp;
+        for line in lines {
             let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&inp) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == inp).unwrap();
+            let src_list: Vec<i64> = (src_range..(src_range+range_len)).collect();
+            if src_list.contains(inp) {
+                let idx = src_list.iter().position(|&n| n == *inp).unwrap();
                 dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
                 // Match found. Hence break
+                break;
             }
         }
         res_list.push(dest);
     }
-    print!("Collected soil list");
-
-    println!("Collecting fertilizer list ...");
-    // Collect fertilizer list
-    for soil in &res_list {
-        let mut dest:i64 = *soil;
-        for line in &seed_info.soil_to_fert_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&soil) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *soil).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        tmp_list.push(dest);
-    }
-    println!("Collected fertilizer list");
-
-    res_list.clear();
-
-    println!("Collecting water list ...");
-    // Collect water list
-    for fert in &tmp_list {
-        let mut dest:i64 = *fert;
-        for line in &seed_info.fert_to_water_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&fert) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *fert).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        res_list.push(dest);
-    }
-    println!("Collected water list");
-
-    tmp_list.clear();
-
-    println!("Collecting light list ...");
-    // Collect light list
-    for water in &res_list {
-        let mut dest:i64 = *water;
-        for line in &seed_info.water_to_light_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&water) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *water).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        tmp_list.push(dest);
-    }
-    println!("Collected light list");
-
-    res_list.clear();
-
-    // Collect temperature list
-    for light in &tmp_list {
-        let mut dest:i64 = *light;
-        for line in &seed_info.light_to_temp_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&light) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *light).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        res_list.push(dest);
-    }
-
-    tmp_list.clear();
-
-    // Collect humidity list
-    for temp in &res_list {
-        let mut dest:i64 = *temp;
-        for line in &seed_info.temp_to_humid_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&temp) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *temp).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        tmp_list.push(dest);
-    }
-
-    res_list.clear();
-
-    // Collect location list
-    for humid in &tmp_list {
-        let mut dest:i64 = *humid;
-        for line in &seed_info.humid_to_loc_info {
-            let (dest_range, src_range, range_len) = sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-            if (src_range..(src_range+range_len)).contains(&humid) {
-                let idx: usize = (src_range..(src_range+range_len)).position(|n| n == *humid).unwrap();
-                dest = (dest_range..(dest_range+range_len)).nth(idx).unwrap();
-                // Match found. Hence break
-            }
-        }
-        res_list.push(dest);
-    }
-
-    // println!("tmp_list is {:?}", tmp_list);
+    println!("Collected list");
     res_list 
 }
 
-fn get_location_list(seed_info: &SeedInfo) {
-    let mut handles = vec![];
+fn get_location_list(seed_info: &SeedInfo) -> Vec<i64> {
+    let pool = ThreadPool::new(3);
+    let mut collected_mins: Vec<i64> = Vec::new();
     for (start, range) in &seed_info.seeds {
         let begin = *start as i64;
         let end = (start + range) as i64;
 
         println!("start,range is ({start},{range})");
-        let (sender, receiver) = channel();
-        let handle = thread::spawn(move || {
-            let mut loc_seed_info: SeedInfo = receiver.recv().unwrap();
+        let (sender, receiver) = channel::<SeedInfo>();
+        let (tx, rx) = channel::<i64>();
+        pool.execute(move || {
+            let loc_seed_info: SeedInfo = receiver.recv().unwrap();
             println!("Before get_result_list ...");
-            let tmp_list = get_result_list(std::ops::Range{start:begin, end}, &loc_seed_info);
+            let tmp_list: Vec<i64> = (begin..end).collect();
+            println!("tmp_list size is {}", tmp_list.len());
+            let mut tmp_list = get_result_list(&tmp_list, &loc_seed_info.seed_to_soil_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.light_to_temp_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
             println!("After get_result_list");
-
-            loc_seed_info.loc_list.push(*tmp_list.iter().min().unwrap());
-            println!("loc_list is {:?}", loc_seed_info.loc_list);
+            let min_val: i64 = *tmp_list.iter().min().unwrap();
+            tx.send(min_val).unwrap();
         });
-        handles.push(handle);
         sender.send(seed_info.clone()).unwrap();
+        collected_mins.push(rx.recv().unwrap());
     }
 
-    for handle in handles {
-        handle.join().unwrap();
-    }
+    println!("collected_mins is {:?}", collected_mins);
+    collected_mins
 }
 
 #[derive(Clone)]
 struct SeedInfo {
-    seeds: Vec<(usize, usize)>,
+    seeds: Vec<(i64, i64)>,
     seed_to_soil_info: Vec<String>,
     soil_to_fert_info: Vec<String>,
     fert_to_water_info: Vec<String>,
@@ -173,7 +80,6 @@ struct SeedInfo {
     light_to_temp_info: Vec<String>,
     temp_to_humid_info: Vec<String>,
     humid_to_loc_info: Vec<String>,
-    loc_list: Vec<i64>,
 }
 
 fn read_contents(content: String) -> SeedInfo {
@@ -186,7 +92,6 @@ fn read_contents(content: String) -> SeedInfo {
         light_to_temp_info : vec![],
         temp_to_humid_info : vec![],
         humid_to_loc_info : vec![],
-        loc_list: vec![],
     };
 
     let mut seed_to_soil_mode: bool = false;
@@ -233,12 +138,12 @@ fn read_contents(content: String) -> SeedInfo {
                 .split_whitespace()
                 .map(|seed| -> usize { seed.parse().unwrap() })
                 .collect();
-            let mut start: usize = 0;
+            let mut start: i64 = 0;
             for idx in 0..seed_data.len() {
                 if idx%2 ==0 {
-                    start = *seed_data.get(idx).unwrap();
+                    start = *seed_data.get(idx).unwrap() as i64;
                 } else {
-                    let range: usize = *seed_data.get(idx).unwrap();
+                    let range: i64 = *seed_data.get(idx).unwrap() as i64;
                     seed_info.seeds.push((start, range));
                 }
             }
@@ -268,9 +173,8 @@ fn main() {
     let content: String = fs::read_to_string(&args.file_name).expect("Unable to load the file!");
 
     let seed_info = read_contents(content);
-    get_location_list(&seed_info);
-    println!("Seed seed_info is {:?}", seed_info.seeds);
-    println!("Seed seed_to_soil_info is {:?}", seed_info.seed_to_soil_info);
+    let loc_min = *get_location_list(&seed_info).iter().min().unwrap();
+    println!("loc min is {loc_min}");
 
     let duration = start_time.elapsed();
     println!("Total time taken -> {:?} ", duration);

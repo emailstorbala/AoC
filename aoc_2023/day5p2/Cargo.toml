@@ -19,3 +19,4 @@ panic = 'unwind'
 clap = { version = "4.4.11", features = ["derive"] }
 mpsc = "0.2.3"
 sscanf = "0.4.1"
+threadpool = "1.8.1"
