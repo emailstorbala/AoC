@@ -1,10 +1,11 @@
 use clap::Parser;
 use sscanf;
-use core::panic;
-use std::sync::mpsc::channel;
+use std::sync::{Arc,Mutex};
 use std::{fs, i64};
 use std::time::Instant;
 use threadpool::ThreadPool;
+
+const THREAD_POOL_COUNT: usize = 2;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -36,38 +37,38 @@ fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     res_list 
 }
 
-fn get_location_list(seed_info: &SeedInfo) -> Vec<i64> {
-    let pool = ThreadPool::new(3);
-    let mut collected_mins: Vec<i64> = Vec::new();
+fn get_location_list(seed_info: &SeedInfo) -> i64 {
+    let pool = ThreadPool::new(THREAD_POOL_COUNT);
+    let shared_data = Arc::new(Mutex::new(vec![]));
     for (start, range) in &seed_info.seeds {
         let begin = *start as i64;
         let end = (start + range) as i64;
 
         println!("start,range is ({start},{range})");
-        let (sender, receiver) = channel::<SeedInfo>();
-        let (tx, rx) = channel::<i64>();
+        let loc_seed_info: SeedInfo = seed_info.clone();
+        let shared_data = Arc::clone(&shared_data);
         pool.execute(move || {
-            let loc_seed_info: SeedInfo = receiver.recv().unwrap();
             println!("Before get_result_list ...");
-            let tmp_list: Vec<i64> = (begin..end).collect();
+            let mut tmp_list: Vec<i64> = (begin..end).collect();
             println!("tmp_list size is {}", tmp_list.len());
-            let mut tmp_list = get_result_list(&tmp_list, &loc_seed_info.seed_to_soil_info);
+            tmp_list = get_result_list(&tmp_list, &loc_seed_info.seed_to_soil_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.light_to_temp_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
-            println!("After get_result_list");
-            let min_val: i64 = *tmp_list.iter().min().unwrap();
-            tx.send(min_val).unwrap();
+            let loc_min: i64 = *tmp_list.iter().min().unwrap();
+            println!("Thread: loc_min is {loc_min}");
+            let mut data = shared_data.lock().unwrap();
+            data.push(loc_min);
         });
-        sender.send(seed_info.clone()).unwrap();
-        collected_mins.push(rx.recv().unwrap());
     }
 
-    println!("collected_mins is {:?}", collected_mins);
-    collected_mins
+    pool.join();
+
+    let data = shared_data.lock().unwrap();
+    *data.iter().min().unwrap()
 }
 
 #[derive(Clone)]
@@ -173,7 +174,7 @@ fn main() {
     let content: String = fs::read_to_string(&args.file_name).expect("Unable to load the file!");
 
     let seed_info = read_contents(content);
-    let loc_min = *get_location_list(&seed_info).iter().min().unwrap();
+    let loc_min = get_location_list(&seed_info);
     println!("loc min is {loc_min}");
 
     let duration = start_time.elapsed();
