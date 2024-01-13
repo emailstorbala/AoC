@@ -47,28 +47,22 @@ fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
         let (dest_range, src_range, range_len) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
         com_list.append(&mut get_common_range(inp, (src_range, src_range+range_len)));
-        line_dtls.push((dest_range, src_range, range_len));
-    }
-    println!("After com_list creation");
-
-    for cmn in &com_list {
-        for line_dtl in &line_dtls {
-            let (dest_range, src_range, range_len): (i64, i64, i64) = *line_dtl;
-            if (src_range..(src_range+range_len)).contains(&cmn) {
-                let idx = (src_range..(src_range + range_len))
+        let mut tmp_list: Vec<i64> = com_list.iter().map(|cmn| -> i64 {
+            let idx = (src_range..(src_range + range_len))
                         .collect::<Vec<i64>>()
                         .iter()
                         .position(|n| *n == *cmn)
                         .unwrap();
-                let dest = (dest_range..(dest_range + range_len)).nth(idx).unwrap();
-                res_list.push(dest);
-                break;
-            }
-        }
+            (dest_range..(dest_range + range_len)).nth(idx).unwrap()
+        }).collect();
+        res_list.append(&mut tmp_list);
+        line_dtls.push((dest_range, src_range, range_len));
     }
+    println!("After com_list creation");
 
     let mut tmp_list: Vec<i64> = (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list);
     res_list.append(&mut tmp_list);
+    println!("After uniq_list processed!");
 
     res_list
 }
