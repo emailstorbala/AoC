@@ -2,9 +2,9 @@ use clap::Parser;
 use sscanf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
+use std::time;
 use std::{fs, i64, usize};
 use threadpool::ThreadPool;
-use array_tool::vec::Intersect;
 use array_tool::vec::Uniq;
 
 const THREAD_POOL_COUNT: usize = 1;
@@ -20,12 +20,18 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
     let (loc1_start, loc1_end) = loc1;
     let (loc2_start, loc2_end) = loc2;
 
-    return if loc2_start <= loc1_start && loc2_end >= loc1_start {
-        // overlap 
-        (loc1_start..loc2_end).collect()
-    } else if loc2_start <= loc1_end && loc2_end >= loc1_end {
-        // overlap
+    return if loc1_start <= loc2_start && loc1_end >= loc2_end {
+        // loc1 is a superset of loc2. return loc2 collection
+        (loc2_start..loc2_end).collect()
+    } else if loc2_start <= loc1_start && loc2_end >= loc1_end {
+        // loc2 is a superset of loc1. return loc1 collection
+        (loc1_start..loc1_end).collect()
+    } else if loc1_start <= loc2_start && loc2_start <= loc1_end {
+        // partial overlap
         (loc2_start..loc1_end).collect()
+    } else if loc1_start <= loc2_end && loc2_end <= loc1_end {
+        // partial overlap
+        (loc1_start..loc2_end).collect()
     } else {
         // No overlap
         vec![]
@@ -33,24 +39,26 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
 }
 
 fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
-    let mut res_list: Vec<i64> = vec![];
-    let mut com_list: Vec<i64> = vec![];
-    let mut src_list: Vec<i64> = vec![];
-    let mut dest_list: Vec<i64> = vec![];
+    let mut res_list: Vec<i64> = Vec::new();
+    let mut com_list: Vec<i64> = Vec::new();
+    let mut src_list: Vec<i64> = Vec::new();
+    let mut dest_list: Vec<i64> = Vec::new();
 
     println!("Before com_list creation");
     for line in lines {
         let (dest_range, src_range, range_len) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-        let tmp_inp: Vec<i64> = (inp.0 .. inp.1).collect();
         let mut tmp_src: Vec<i64> = (src_range..src_range+range_len).collect();
         let mut tmp_dest: Vec<i64> = (dest_range..dest_range+range_len).collect();
-        //let mut tmp_list = get_common_range((src_range, src_range+range_len), (dest_range, dest_range+range_len));
-        let mut tmp_list = tmp_inp.intersect(tmp_src.clone());
-        com_list.append(&mut tmp_list);
-        println!("com_list is {:?}", com_list);
+        com_list.append(&mut get_common_range(inp, (src_range, src_range+range_len)));
+        println!("com_list appended!");
+        std::thread::sleep(time::Duration::from_secs(5));
         src_list.append(&mut tmp_src);
+        println!("src_list appended!");
+        std::thread::sleep(time::Duration::from_secs(5));
         dest_list.append(&mut tmp_dest);
+        println!("dest_list appended!");
+        std::thread::sleep(time::Duration::from_secs(5));
     }
     println!("After com_list creation");
 
@@ -236,11 +244,43 @@ fn main() {
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
+    use array_tool::vec::Intersect;
 
     #[test]
     fn test_get_common_range() {
-        let loc1: (i64, i64) = (50, 97);
-        let loc2: (i64, i64) = (52, 99);
+        // Full overlap
+        let loc1: (i64, i64) = (79, 93);
+        let loc2: (i64, i64) = (50, 98);
+        let loc1_list: Vec<i64> = (loc1.0 .. loc1.1).collect();
+        let loc2_list: Vec<i64> = (loc2.0 .. loc2.1).collect();
+        assert_eq!(loc1_list.intersect(loc2_list), get_common_range(loc1, loc2));
+    }
+
+    #[test]
+    fn test_get_common_range_left_overlap() {
+        // Left overlap
+        let loc1: (i64, i64) = (79, 93);
+        let loc2: (i64, i64) = (50, 85);
+        let loc1_list: Vec<i64> = (loc1.0 .. loc1.1).collect();
+        let loc2_list: Vec<i64> = (loc2.0 .. loc2.1).collect();
+        assert_eq!(loc1_list.intersect(loc2_list), get_common_range(loc1, loc2));
+    }
+
+    #[test]
+    fn test_get_common_range_right_overlap() {
+        // Right overlap
+        let loc1: (i64, i64) = (79, 93);
+        let loc2: (i64, i64) = (80, 100);
+        let loc1_list: Vec<i64> = (loc1.0 .. loc1.1).collect();
+        let loc2_list: Vec<i64> = (loc2.0 .. loc2.1).collect();
+        assert_eq!(loc1_list.intersect(loc2_list), get_common_range(loc1, loc2));
+    }
+
+    #[test]
+    fn test_get_common_range_no_overlap() {
+        // No overlap
+        let loc1: (i64, i64) = (79, 93);
+        let loc2: (i64, i64) = (50, 80);
         let loc1_list: Vec<i64> = (loc1.0 .. loc1.1).collect();
         let loc2_list: Vec<i64> = (loc2.0 .. loc2.1).collect();
         assert_eq!(loc1_list.intersect(loc2_list), get_common_range(loc1, loc2));
