@@ -32,7 +32,7 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
     }
 }
 
-fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
+fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = vec![];
     let mut com_list: Vec<i64> = vec![];
     let mut src_list: Vec<i64> = vec![];
@@ -42,10 +42,11 @@ fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     for line in lines {
         let (dest_range, src_range, range_len) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
+        let tmp_inp: Vec<i64> = (inp.0 .. inp.1).collect();
         let mut tmp_src: Vec<i64> = (src_range..src_range+range_len).collect();
         let mut tmp_dest: Vec<i64> = (dest_range..dest_range+range_len).collect();
         //let mut tmp_list = get_common_range((src_range, src_range+range_len), (dest_range, dest_range+range_len));
-        let mut tmp_list = inp_list.intersect(tmp_dest.clone());
+        let mut tmp_list = tmp_inp.intersect(tmp_src.clone());
         com_list.append(&mut tmp_list);
         println!("com_list is {:?}", com_list);
         src_list.append(&mut tmp_src);
@@ -63,12 +64,12 @@ fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     println!("com_list processed!");
 
     // For elements not found in source, the input is the output
-    res_list.append(&mut inp_list.uniq(com_list));
+    res_list.append(&mut (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list));
     println!("uniq_list processed ->{:?}", res_list);
     res_list
 }
 
-fn _get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
+fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     inp_list
     .into_iter()
     .map(|inp| -> i64 {
@@ -102,7 +103,7 @@ fn get_location_list(seed_info: &SeedInfo) -> i64 {
         let loc_seed_info: SeedInfo = seed_info.clone();
         let shared_data = Arc::clone(&shared_data);
         pool.execute(move || {
-            let mut tmp_list = get_result_list(&(begin..end).collect::<Vec<i64>>(), &loc_seed_info.seed_to_soil_info);
+            let mut tmp_list = get_result_list_1((begin, end), &loc_seed_info.seed_to_soil_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
