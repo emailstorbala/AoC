@@ -2,10 +2,12 @@ use clap::Parser;
 use sscanf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use std::{fs, i64};
+use std::{fs, i64, usize};
 use threadpool::ThreadPool;
+use array_tool::vec::Intersect;
+use array_tool::vec::Uniq;
 
-const THREAD_POOL_COUNT: usize = 2;
+const THREAD_POOL_COUNT: usize = 1;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -14,7 +16,59 @@ struct Args {
     file_name: String,
 }
 
+fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
+    let (loc1_start, loc1_end) = loc1;
+    let (loc2_start, loc2_end) = loc2;
+
+    return if loc2_start <= loc1_start && loc2_end >= loc1_start {
+        // overlap 
+        (loc1_start..loc2_end).collect()
+    } else if loc2_start <= loc1_end && loc2_end >= loc1_end {
+        // overlap
+        (loc2_start..loc1_end).collect()
+    } else {
+        // No overlap
+        vec![]
+    }
+}
+
 fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
+    let mut res_list: Vec<i64> = vec![];
+    let mut com_list: Vec<i64> = vec![];
+    let mut src_list: Vec<i64> = vec![];
+    let mut dest_list: Vec<i64> = vec![];
+
+    println!("Before com_list creation");
+    for line in lines {
+        let (dest_range, src_range, range_len) =
+            sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
+        let mut tmp_src: Vec<i64> = (src_range..src_range+range_len).collect();
+        let mut tmp_dest: Vec<i64> = (dest_range..dest_range+range_len).collect();
+        //let mut tmp_list = get_common_range((src_range, src_range+range_len), (dest_range, dest_range+range_len));
+        let mut tmp_list = inp_list.intersect(tmp_dest.clone());
+        com_list.append(&mut tmp_list);
+        println!("com_list is {:?}", com_list);
+        src_list.append(&mut tmp_src);
+        dest_list.append(&mut tmp_dest);
+    }
+    println!("After com_list creation");
+
+    res_list.append(&mut com_list.iter().map(|x| -> i64 {
+        let idx: usize = src_list
+                .iter()
+                .position(|&n| n == *x)
+                .unwrap();
+        *dest_list.iter().nth(idx).unwrap()
+    }).collect());
+    println!("com_list processed!");
+
+    // For elements not found in source, the input is the output
+    res_list.append(&mut inp_list.uniq(com_list));
+    println!("uniq_list processed ->{:?}", res_list);
+    res_list
+}
+
+fn _get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     inp_list
     .into_iter()
     .map(|inp| -> i64 {
@@ -56,7 +110,7 @@ fn get_location_list(seed_info: &SeedInfo) -> i64 {
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
             let loc_min: i64 = *tmp_list.iter().min().unwrap();
-            // println!("Thread: loc_min is {loc_min}");
+            println!("Thread: loc_min is {loc_min}");
             let mut data = shared_data.lock().unwrap();
             data.push(loc_min);
         });
@@ -175,4 +229,19 @@ fn main() {
 
     let duration = start_time.elapsed();
     println!("Total time taken -> {:?} ", duration);
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_get_common_range() {
+        let loc1: (i64, i64) = (50, 97);
+        let loc2: (i64, i64) = (52, 99);
+        let loc1_list: Vec<i64> = (loc1.0 .. loc1.1).collect();
+        let loc2_list: Vec<i64> = (loc2.0 .. loc2.1).collect();
+        assert_eq!(loc1_list.intersect(loc2_list), get_common_range(loc1, loc2));
+    }
 }
