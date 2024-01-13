@@ -40,33 +40,30 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
 fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = Vec::new();
     let mut com_list: Vec<i64> = Vec::new();
-    let mut line_dtls: Vec<(i64, i64, i64)> = Vec::new();
 
-    println!("Before com_list creation");
+    println!("Before com_list preparation");
     for line in lines {
         println!("line is {line}");
-        let (dest_range, src_range, range_len) =
+        let (dest_range, src_range, range_len): (i64, i64, i64) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
         let mut tmp_com_list: Vec<i64> = get_common_range(inp, (src_range, src_range+range_len));
-        println!("tmp_com_list is {:?}", tmp_com_list);
-        let mut tmp_list: Vec<i64> = tmp_com_list.iter().map(|cmn| -> i64 {
-            let idx = (src_range..(src_range + range_len))
+        let mut tmp_list: Vec<i64> = tmp_com_list.iter().map(|&cmn| -> i64 {
+            let idx: usize = (src_range..(src_range + range_len))
                         .collect::<Vec<i64>>()
                         .iter()
-                        .position(|n| *n == *cmn)
+                        .position(|n| *n == cmn)
                         .unwrap();
             (dest_range..(dest_range + range_len)).nth(idx).unwrap()
         }).collect();
-        com_list.append(&mut tmp_com_list);
-        println!("tmp_list is {:?}", tmp_list);
         res_list.append(&mut tmp_list);
-        line_dtls.push((dest_range, src_range, range_len));
+        com_list.append(&mut tmp_com_list);
+        println!("tmp_com_list processed!");
     }
-    println!("After com_list creation");
+    println!("After com_list prepared!");
 
     let mut tmp_list: Vec<i64> = (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list);
     res_list.append(&mut tmp_list);
-    println!("After uniq_list processed! -> {:?}", res_list);
+    println!("After uniq_list processed!");
 
     res_list
 }
