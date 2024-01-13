@@ -2,7 +2,6 @@ use clap::Parser;
 use sscanf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use std::time;
 use std::{fs, i64, usize};
 use threadpool::ThreadPool;
 use array_tool::vec::Uniq;
@@ -41,39 +40,36 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
 fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = Vec::new();
     let mut com_list: Vec<i64> = Vec::new();
-    let mut src_list: Vec<i64> = Vec::new();
-    let mut dest_list: Vec<i64> = Vec::new();
+    let mut line_dtls: Vec<(i64, i64, i64)> = Vec::new();
 
     println!("Before com_list creation");
     for line in lines {
         let (dest_range, src_range, range_len) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-        let mut tmp_src: Vec<i64> = (src_range..src_range+range_len).collect();
-        let mut tmp_dest: Vec<i64> = (dest_range..dest_range+range_len).collect();
         com_list.append(&mut get_common_range(inp, (src_range, src_range+range_len)));
-        println!("com_list appended!");
-        std::thread::sleep(time::Duration::from_secs(5));
-        src_list.append(&mut tmp_src);
-        println!("src_list appended!");
-        std::thread::sleep(time::Duration::from_secs(5));
-        dest_list.append(&mut tmp_dest);
-        println!("dest_list appended!");
-        std::thread::sleep(time::Duration::from_secs(5));
+        line_dtls.push((dest_range, src_range, range_len));
     }
     println!("After com_list creation");
 
-    res_list.append(&mut com_list.iter().map(|x| -> i64 {
-        let idx: usize = src_list
-                .iter()
-                .position(|&n| n == *x)
-                .unwrap();
-        *dest_list.iter().nth(idx).unwrap()
-    }).collect());
-    println!("com_list processed!");
+    for cmn in &com_list {
+        for line_dtl in &line_dtls {
+            let (dest_range, src_range, range_len): (i64, i64, i64) = *line_dtl;
+            if (src_range..(src_range+range_len)).contains(&cmn) {
+                let idx = (src_range..(src_range + range_len))
+                        .collect::<Vec<i64>>()
+                        .iter()
+                        .position(|n| *n == *cmn)
+                        .unwrap();
+                let dest = (dest_range..(dest_range + range_len)).nth(idx).unwrap();
+                res_list.push(dest);
+                break;
+            }
+        }
+    }
 
-    // For elements not found in source, the input is the output
-    res_list.append(&mut (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list));
-    println!("uniq_list processed ->{:?}", res_list);
+    let mut tmp_list: Vec<i64> = (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list);
+    res_list.append(&mut tmp_list);
+
     res_list
 }
 
