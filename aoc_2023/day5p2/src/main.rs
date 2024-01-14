@@ -4,7 +4,6 @@ use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use std::{fs, i64, usize};
 use threadpool::ThreadPool;
-use array_tool::vec::Uniq;
 
 const THREAD_POOL_COUNT: usize = 1;
 
@@ -39,27 +38,42 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
 
 fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = Vec::new();
-    let mut com_list: Vec<i64> = Vec::new();
+    let mut miss_list: Vec<i64> = (inp.0 .. inp.1).collect();
 
     println!("Before com_list preparation");
     for line in lines {
         println!("line is {line}");
         let (dest_range, src_range, range_len): (i64, i64, i64) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
-        let mut tmp_com_list: Vec<i64> = get_common_range(inp, (src_range, src_range+range_len));
+        let tmp_com_list: Vec<i64> = get_common_range(inp, (src_range, src_range+range_len));
         if tmp_com_list.len() == 0 {
             continue;
         }
+        let com_start_elem = tmp_com_list.iter().nth(0).unwrap();
+        let com_end_elem = tmp_com_list.iter().last().unwrap();
         let com_start: usize = (src_range..(src_range+range_len))
             .collect::<Vec<i64>>()
             .iter()
-            .position(|n| n == tmp_com_list.iter().nth(0).unwrap())
+            .position(|n| n == com_start_elem)
             .unwrap();
         let com_end: usize = (src_range..(src_range+range_len))
             .collect::<Vec<i64>>()
             .iter()
-            .position(|n| n == tmp_com_list.iter().last().unwrap())
+            .position(|n| n == com_end_elem)
             .unwrap();
+
+        if miss_list.contains(&com_start_elem) && miss_list.contains(&com_end_elem) {
+            let tmp_beg: usize = miss_list
+                .iter()
+                .position(|n| n == com_start_elem)
+                .unwrap();
+            let tmp_end: usize = miss_list
+                .iter()
+                .position(|n| n == com_end_elem)
+                .unwrap();
+
+            miss_list.drain(tmp_beg..tmp_end);
+        }
 
         println!("tmp_com_list is prepared!");
         let com_pos_list: Vec<usize> = (com_start..=com_end).collect();
@@ -68,13 +82,11 @@ fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
             (dest_range..(dest_range + range_len)).nth(idx).unwrap()
         }).collect();
         res_list.append(&mut tmp_list);
-        com_list.append(&mut tmp_com_list);
         println!("tmp_com_list processed!");
     }
     println!("After com_list prepared!");
 
-    let mut tmp_list: Vec<i64> = (inp.0 .. inp.1).collect::<Vec<i64>>().uniq(com_list);
-    res_list.append(&mut tmp_list);
+    res_list.append(&mut miss_list);
     println!("After uniq_list processed!");
 
     res_list
