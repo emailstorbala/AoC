@@ -127,13 +127,20 @@ fn get_location_list(seed_info: &SeedInfo) -> i64 {
         let shared_data = Arc::clone(&shared_data);
         pool.execute(move || {
             let mut tmp_list = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
+            println!("soil list prepared!. Size is {}", tmp_list.len());
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
+            println!("fert list prepared!");
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
+            println!("water list prepared!");
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
+            println!("light list prepared!");
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.light_to_temp_info);
+            println!("temp list prepared!");
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
+            println!("humid list prepared!");
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
             let loc_min: i64 = *tmp_list.iter().min().unwrap();
+            println!("Final loc list prepared!");
             println!("Thread: loc_min is {loc_min}");
             let mut data = shared_data.lock().unwrap();
             data.push(loc_min);
