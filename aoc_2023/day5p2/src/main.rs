@@ -37,7 +37,7 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
     }
 }
 
-fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
+fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
     let mut res_list: Vec<i64> = Vec::new();
     let mut com_list: Vec<i64> = Vec::new();
 
@@ -47,12 +47,24 @@ fn get_result_list_1(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
         let (dest_range, src_range, range_len): (i64, i64, i64) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
         let mut tmp_com_list: Vec<i64> = get_common_range(inp, (src_range, src_range+range_len));
-        let mut tmp_list: Vec<i64> = tmp_com_list.iter().map(|&cmn| -> i64 {
-            let idx: usize = (src_range..(src_range + range_len))
-                        .collect::<Vec<i64>>()
-                        .iter()
-                        .position(|n| *n == cmn)
-                        .unwrap();
+        if tmp_com_list.len() == 0 {
+            continue;
+        }
+        let com_start: usize = (src_range..(src_range+range_len))
+            .collect::<Vec<i64>>()
+            .iter()
+            .position(|n| n == tmp_com_list.iter().nth(0).unwrap())
+            .unwrap();
+        let com_end: usize = (src_range..(src_range+range_len))
+            .collect::<Vec<i64>>()
+            .iter()
+            .position(|n| n == tmp_com_list.iter().last().unwrap())
+            .unwrap();
+
+        println!("tmp_com_list is prepared!");
+        let com_pos_list: Vec<usize> = (com_start..=com_end).collect();
+        let mut tmp_list: Vec<i64> = com_pos_list
+            .iter().map(|&idx| -> i64 {
             (dest_range..(dest_range + range_len)).nth(idx).unwrap()
         }).collect();
         res_list.append(&mut tmp_list);
@@ -102,7 +114,7 @@ fn get_location_list(seed_info: &SeedInfo) -> i64 {
         let loc_seed_info: SeedInfo = seed_info.clone();
         let shared_data = Arc::clone(&shared_data);
         pool.execute(move || {
-            let mut tmp_list = get_result_list_1((begin, end), &loc_seed_info.seed_to_soil_info);
+            let mut tmp_list = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
