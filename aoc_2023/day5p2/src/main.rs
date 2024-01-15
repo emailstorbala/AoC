@@ -76,11 +76,7 @@ fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
         }
 
         println!("tmp_com_list is prepared!");
-        let com_pos_list: Vec<usize> = (com_start..=com_end).collect();
-        let mut tmp_list: Vec<i64> = com_pos_list
-            .iter().map(|&idx| -> i64 {
-            (dest_range..(dest_range + range_len)).nth(idx).unwrap()
-        }).collect();
+        let mut tmp_list: Vec<i64> = (&(dest_range..(dest_range+range_len)).collect::<Vec<i64>>()[com_start..com_end]).to_vec();
         res_list.append(&mut tmp_list);
         println!("tmp_com_list processed!");
     }
