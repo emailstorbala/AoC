@@ -46,7 +46,7 @@ fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
         let (dest_range, src_range, range_len): (i64, i64, i64) =
             sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
         let tmp_com_list: Vec<i64> = get_common_range(inp, (src_range, src_range+range_len));
-        if tmp_com_list.len() == 0 {
+        if tmp_com_list.is_empty() {
             continue;
         }
         let com_start_elem = tmp_com_list.iter().nth(0).unwrap();
@@ -91,16 +91,16 @@ fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
 fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
     inp_list
     .into_iter()
-    .map(|inp| -> i64 {
-        let mut dest: i64 = *inp;
+    .map(|&inp| -> i64 {
+        let mut dest: i64 = inp;
         for line in lines {
-            let (dest_range, src_range, range_len) =
+            let (dest_range, src_range, range_len): (i64, i64, i64) =
                 sscanf::sscanf!(line, "{i64} {i64} {i64}").unwrap();
             if (src_range..(src_range + range_len)).contains(&inp) {
                 let idx = (src_range..(src_range + range_len))
                     .collect::<Vec<i64>>()
                     .iter()
-                    .position(|n| n == inp)
+                    .position(|&n| n == inp)
                     .unwrap();
                 dest = (dest_range..(dest_range + range_len)).nth(idx).unwrap();
                 // Match found. Hence break
@@ -122,7 +122,7 @@ fn get_location_list(seed_info: &SeedInfo) -> i64 {
         let loc_seed_info: SeedInfo = seed_info.clone();
         let shared_data = Arc::clone(&shared_data);
         pool.execute(move || {
-            let mut tmp_list = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
+            let mut tmp_list: Vec<i64> = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
             println!("soil list prepared!. Size is {}", tmp_list.len());
             tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
             println!("fert list prepared!");
