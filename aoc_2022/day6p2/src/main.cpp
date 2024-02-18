@@ -1,6 +1,6 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
-#include "Utilities.h"
 #include "AocUtils.h"
+#include "Utilities.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <exception>
@@ -56,7 +56,7 @@ int main(int argc, const char *argv[]) {
     auto &&fname = ParseProgramArguments(argc, argv);
     for (const string &line : ReadInputFile(fname)) {
         AocUtils aocUtils;
-        if (size_t res = aocUtils.GetMarkerCharacter(line); res != string::npos) {
+        if (auto res = aocUtils.GetMarkerCharacter(line); res != string::npos) {
             fmt::print("The result is {}\n", res);
         }
     }
