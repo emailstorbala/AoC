@@ -1,11 +1,7 @@
 use clap::Parser;
 use sscanf;
-use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use std::{fs, i64, usize};
-use threadpool::ThreadPool;
-
-const THREAD_POOL_COUNT: usize = 1;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -18,7 +14,7 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
     let (loc1_start, loc1_end) = loc1;
     let (loc2_start, loc2_end) = loc2;
 
-    return if loc1_start <= loc2_start && loc1_end >= loc2_end {
+    let res:Vec<i64> = if loc1_start <= loc2_start && loc1_end >= loc2_end {
         // loc1 is a superset of loc2. return loc2 collection
         (loc2_start..loc2_end).collect()
     } else if loc2_start <= loc1_start && loc2_end >= loc1_end {
@@ -33,7 +29,9 @@ fn get_common_range(loc1: (i64, i64), loc2: (i64, i64)) -> Vec<i64> {
     } else {
         // No overlap
         vec![]
-    }
+    };
+
+    res
 }
 
 fn get_seed_list(inp: (i64, i64), lines: &Vec<String>) -> Vec<i64> {
@@ -112,41 +110,33 @@ fn get_result_list(inp_list: &Vec<i64>, lines: &Vec<String>) -> Vec<i64> {
 }
 
 fn get_location_list(seed_info: &SeedInfo) -> i64 {
-    let pool = ThreadPool::new(THREAD_POOL_COUNT);
-    let shared_data = Arc::new(Mutex::new(vec![]));
+    let mut min_list: Vec<i64> = Vec::new();
     for (start, range) in &seed_info.seeds {
         let begin = *start as i64;
         let end = (start + range) as i64;
 
         println!("start,range is ({start},{range})");
         let loc_seed_info: SeedInfo = seed_info.clone();
-        let shared_data = Arc::clone(&shared_data);
-        pool.execute(move || {
-            let mut tmp_list: Vec<i64> = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
-            println!("soil list prepared!. Size is {}", tmp_list.len());
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
-            println!("fert list prepared!");
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
-            println!("water list prepared!");
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
-            println!("light list prepared!");
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.light_to_temp_info);
-            println!("temp list prepared!");
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
-            println!("humid list prepared!");
-            tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
-            let loc_min: i64 = *tmp_list.iter().min().unwrap();
-            println!("Final loc list prepared!");
-            println!("Thread: loc_min is {loc_min}");
-            let mut data = shared_data.lock().unwrap();
-            data.push(loc_min);
-        });
+        let mut tmp_list: Vec<i64> = get_seed_list((begin, end), &loc_seed_info.seed_to_soil_info);
+        println!("soil list prepared!. Size is {}", tmp_list.len());
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.soil_to_fert_info);
+        println!("fert list prepared!");
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.fert_to_water_info);
+        println!("water list prepared!");
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.water_to_light_info);
+        println!("light list prepared!");
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.light_to_temp_info);
+        println!("temp list prepared!");
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.temp_to_humid_info);
+        println!("humid list prepared!");
+        tmp_list = get_result_list(&tmp_list, &loc_seed_info.humid_to_loc_info);
+        let loc_min: i64 = *tmp_list.iter().min().unwrap();
+        println!("Final loc list prepared!");
+        println!("Thread: loc_min is {loc_min}");
+        min_list.push(loc_min);
     }
 
-    pool.join();
-
-    let data = shared_data.lock().unwrap();
-    *data.iter().min().unwrap()
+    min_list.into_iter().min().unwrap()
 }
 
 #[derive(Clone)]
