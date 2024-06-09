@@ -1,7 +1,7 @@
 #include "Utilities.h"
 #include "AocUtils.h"
 
-int AocUtils::GetMarkerCharacter(const string &inpStr) {
+size_t AocUtils::GetMarkerCharacter(const string &inpStr) {
   const int cmpStrLen = 14;
   size_t uniqCharPos = string::npos;
 

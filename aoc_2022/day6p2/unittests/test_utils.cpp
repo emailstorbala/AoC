@@ -1,6 +1,5 @@
 #include "Utilities.h"
 #include <gtest/gtest.h>
-#include <string_view>
 
 using std::string;
 

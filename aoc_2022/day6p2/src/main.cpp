@@ -3,7 +3,6 @@
 #include "Utilities.h"
 #include <boost/program_options.hpp>
 #include <chrono>
-#include <exception>
 #include <fmt/format.h>
 #include <iostream>
 #include <string_view>
@@ -62,8 +61,8 @@ int main(int argc, const char *argv[]) {
     }
 
     auto end = chrono::steady_clock::now();
-    auto dur = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    fmt::print("Time taken: {} µ.sec\n", (dur / 1000.0));
+    auto dur = chrono::duration_cast<chrono::microseconds>(end - start).count();
+    fmt::print("Time taken: {} µ.sec\n", dur);
 
     return EXIT_SUCCESS;
 }
