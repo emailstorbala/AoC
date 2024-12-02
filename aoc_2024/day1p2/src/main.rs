@@ -42,17 +42,9 @@ fn main() {
 
     let mut total_dist: i64 = 0;
     for first in data.first_data {
-        let mut cnt = 0;
-        for second in &data.sec_data {
-            if first == *second {
-                cnt += 1;
-            }
-        }
-
+        // Count the number of times the element `first` appeared in the vector `data.sec_data`
+        let cnt = data.sec_data.iter().filter(|&x| *x == first).count() as i64;
         total_dist += first * cnt;
-        // println!("first is {first}");
-        // println!("cnt is {cnt}");
-        // println!("tot dist: {total_dist}");
     }
 
     println!("Total dist is {total_dist}");
