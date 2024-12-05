@@ -21,31 +21,23 @@ fn read_contents(content: String) -> usize {
             tmp_vec.push(num_str.parse::<i64>().unwrap());
         }
 
-        if tmp_vec.len() < 2 {
-            // Only one level
-            // Valid record. Push it
-            records.push(tmp_vec.clone());
-        } else if tmp_vec.len() == 2 {
-            // Only 2 levels
-            // Valid record. Push it
-            if tmp_vec.first() == tmp_vec.last() || (tmp_vec.first().unwrap() - tmp_vec.last().unwrap()).abs() > 3 {
-                tmp_vec.remove(2);
-                records.push(tmp_vec);
-            } else {
-                records.push(tmp_vec);
-            }
+        if tmp_vec.len() <= 2 {
+            // Valid record since one error record is allowed.
+            records.push(tmp_vec);
         } else {
             let mut error_idx: usize = 0;
             let mut errored = false;
+            // println!("tmp_vec -> {:?}", tmp_vec);
             for (idx, &num) in tmp_vec.iter().enumerate() {
-                if idx != 0 && idx + 1 < tmp_vec.len() {
+                if idx > 0 && idx + 1 < tmp_vec.len() {
                     // println!("idx is {idx}");
                     // println!("num is {num}");
                     let prev_num = tmp_vec.iter().nth(idx - 1).unwrap();
                     let next_num = tmp_vec.iter().nth(idx + 1).unwrap();
                     let dist = (prev_num - num).abs();
+                    let back_dist = (num - next_num).abs();
 
-                    if dist == 0 || dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
+                    if dist == 0 || dist > 3 || back_dist == 0 || back_dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
                         error_idx = idx;
                         errored = true;
                         break;
@@ -54,6 +46,7 @@ fn read_contents(content: String) -> usize {
             }
 
             if errored {
+                // println!("error_idx: {error_idx}");
                 tmp_vec.remove(error_idx);
             }
             records.push(tmp_vec);
@@ -62,21 +55,13 @@ fn read_contents(content: String) -> usize {
 
     let mut safe_records: Vec<Vec<i64>> = Vec::new();
     for new_rec in &records {
-        if new_rec.len() < 2 {
-            // Only one level
-            // Valid record. Push it
+        if new_rec.len() <= 2 {
+            // Valid record since one error record is allowed.
             safe_records.push(new_rec.clone());
-        } else if new_rec.len() == 2 {
-            // Only 2 level
-            if new_rec.first() == new_rec.last() || (new_rec.first().unwrap() - new_rec.last().unwrap()).abs() > 3 {
-                // Invalid record
-            } else {
-                safe_records.push(new_rec.clone());
-            }
         } else {
             let mut errored = false;
             for (idx, &num) in new_rec.iter().enumerate() {
-                if idx != 0 && idx + 1 < new_rec.len() {
+                if idx > 0 && idx + 1 < new_rec.len() {
                     // println!("idx is {idx}");
                     let prev_num = new_rec.iter().nth(idx - 1).unwrap();
                     let next_num = new_rec.iter().nth(idx + 1).unwrap();
