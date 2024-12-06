@@ -1,6 +1,6 @@
 use clap::Parser;
-use std::{fs, i64};
 use std::time::Instant;
+use std::{fs, i64};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -10,7 +10,7 @@ struct Args {
 }
 
 fn read_contents(content: String) -> Vec<Vec<i64>> {
-    let mut data:Vec<Vec<i64>> = Vec::new();
+    let mut data: Vec<Vec<i64>> = Vec::new();
     for line in content.split('\n') {
         if line.is_empty() {
             break;
@@ -69,7 +69,6 @@ fn main() {
                 }
                 prev_num = *num;
             }
-
         }
 
         if safe {

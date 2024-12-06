@@ -1,7 +1,7 @@
 use clap::Parser;
-use std::{fs, i64};
 use sscanf;
 use std::time::Instant;
+use std::{fs, i64};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -12,13 +12,13 @@ struct Args {
 
 struct Data {
     first_data: Vec<i64>,
-    sec_data: Vec<i64>
+    sec_data: Vec<i64>,
 }
 
 fn read_contents(content: String) -> Data {
     let mut data: Data = Data {
         first_data: vec![],
-        sec_data: vec![]
+        sec_data: vec![],
     };
 
     for line in content.split('\n') {
