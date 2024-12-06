@@ -1,7 +1,7 @@
 use clap::Parser;
+use sscanf;
 use std::time::Instant;
 use std::{fs, i64};
-use sscanf;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -10,11 +10,9 @@ struct Args {
     file_name: String,
 }
 
-
-
 fn read_contents(content: String) -> i64 {
     let mut result: i64 = 0;
-    for mut line in content.split('\n') {
+    for line in content.split('\n') {
         if line.is_empty() {
             break;
         }
@@ -23,21 +21,21 @@ fn read_contents(content: String) -> i64 {
         for ins in line.split_whitespace() {
             if ins.starts_with("mul") {
                 let data = format!("{ins}dummy");
-                println!("data is {data}");
+                // println!("data is {data}");
                 let parsed = sscanf::sscanf!(data, "mul({i64},{i64}){&str}");
                 match parsed {
                     Ok((first, second, _)) => {
-                        println!("first, second -> {first}, {second}");
-                        result += first*second;
-                        println!("result is {result}");
-                    },
-                    Err(e) => println!("Error occured: {e}"),
+                        // println!("first, second -> {first}, {second}");
+                        result += first * second;
+                    }
+                    Err(_) => {
+                        // Ignoring error
+                    }
                 }
             }
         }
     }
 
-    println!("The result is {result}");
     result
 }
 
@@ -46,4 +44,7 @@ fn main() {
     let start_time = Instant::now();
     let content = fs::read_to_string(&args.file_name).expect("Unable to load the file!");
     let res = read_contents(content);
+    println!("The result is {res}");
+    let duration = start_time.elapsed();
+    println!("Total time taken -> {:?} ", duration);
 }
