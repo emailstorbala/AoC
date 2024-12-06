@@ -40,11 +40,7 @@ fn read_contents(content: String) -> usize {
                 } else if idx == tmp_vec.len() - 1 {
                     let prev_num = tmp_vec.iter().nth(idx - 1).unwrap();
                     let dist = (prev_num - num).abs();
-                    if dist == 0 {
-                        error_idx = idx - 1;
-                        errored = true;
-                        break;
-                    } else if dist > 3 {
+                    if dist == 0 || dist > 3 {
                         error_idx = idx;
                         errored = true;
                         break;
