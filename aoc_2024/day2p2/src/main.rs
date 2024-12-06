@@ -29,27 +29,37 @@ fn read_contents(content: String) -> usize {
             let mut errored = false;
             // println!("tmp_vec -> {:?}", tmp_vec);
             for (idx, &num) in tmp_vec.iter().enumerate() {
-                if idx + 1 < tmp_vec.len() {
-                    if idx == 0 {
-                        let next_num = tmp_vec.iter().nth(idx + 1).unwrap();
-                        let dist = (next_num - num).abs();
-                        if dist == 0 || dist > 3 {
-                            error_idx = idx;
-                            errored = true;
-                            break;
-                        }
-                    } else {
-                        // println!("idx is {idx}");
-                        // println!("num is {num}");
-                        let prev_num = tmp_vec.iter().nth(idx - 1).unwrap();
-                        let next_num = tmp_vec.iter().nth(idx + 1).unwrap();
-                        let dist = (prev_num - num).abs();
+                if idx == 0 {
+                    let next_num = tmp_vec.iter().nth(idx + 1).unwrap();
+                    let dist = (next_num - num).abs();
+                    if dist == 0 || dist > 3 {
+                        error_idx = idx;
+                        errored = true;
+                        break;
+                    }
+                } else if idx == tmp_vec.len() - 1 {
+                    let prev_num = tmp_vec.iter().nth(idx - 1).unwrap();
+                    let dist = (prev_num - num).abs();
+                    if dist == 0 {
+                        error_idx = idx - 1;
+                        errored = true;
+                        break;
+                    } else if dist > 3 {
+                        error_idx = idx;
+                        errored = true;
+                        break;
+                    }
+                } else {
+                    // println!("idx is {idx}");
+                    // println!("num is {num}");
+                    let prev_num = tmp_vec.iter().nth(idx - 1).unwrap();
+                    let next_num = tmp_vec.iter().nth(idx + 1).unwrap();
+                    let dist = (prev_num - num).abs();
 
-                        if dist == 0 || dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
-                            error_idx = idx;
-                            errored = true;
-                            break;
-                        }
+                    if dist == 0 || dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
+                        error_idx = idx;
+                        errored = true;
+                        break;
                     }
                 }
             }
@@ -62,6 +72,8 @@ fn read_contents(content: String) -> usize {
         }
     }
 
+    println!("first filter records: {:?}", records);
+
     let mut safe_records: Vec<Vec<i64>> = Vec::new();
     for new_rec in &records {
         if new_rec.len() <= 2 {
@@ -70,30 +82,35 @@ fn read_contents(content: String) -> usize {
         } else {
             let mut errored = false;
             for (idx, &num) in new_rec.iter().enumerate() {
-                if idx + 1 < new_rec.len() {
-                    if idx == 0 {
-                        let next_num = new_rec.iter().nth(idx + 1).unwrap();
-                        let dist = (next_num - num).abs();
-                        if dist == 0 || dist > 3 {
-                            errored = true;
-                            break;
-                        }
-                    } else {
-                        // println!("idx is {idx}");
-                        let prev_num = new_rec.iter().nth(idx - 1).unwrap();
-                        let next_num = new_rec.iter().nth(idx + 1).unwrap();
-                        // println!("prev_num is {prev_num}");
-                        // println!("num is {num}");
-                        // println!("next_num is {next_num}");
-                        let dist = (prev_num - num).abs();
-                        let back_dist = (num - next_num).abs();
-                        // println!("dist: {dist}");
-                        // println!("back_dist: {back_dist}");
+                if idx == 0 {
+                    let next_num = new_rec.iter().nth(idx + 1).unwrap();
+                    let dist = (next_num - num).abs();
+                    if dist == 0 || dist > 3 {
+                        errored = true;
+                        break;
+                    }
+                } else if idx == new_rec.len() - 1 {
+                    let prev_num = new_rec.iter().nth(idx - 1).unwrap();
+                    let dist = (prev_num - num).abs();
+                    if dist == 0 || dist > 3 {
+                        errored = true;
+                        break;
+                    }
+                } else {
+                    // println!("idx is {idx}");
+                    let prev_num = new_rec.iter().nth(idx - 1).unwrap();
+                    let next_num = new_rec.iter().nth(idx + 1).unwrap();
+                    // println!("prev_num is {prev_num}");
+                    // println!("num is {num}");
+                    // println!("next_num is {next_num}");
+                    let dist = (prev_num - num).abs();
+                    // let back_dist = (num - next_num).abs();
+                    // println!("dist: {dist}");
+                    // println!("back_dist: {back_dist}");
 
-                        if dist == 0 || dist > 3 || back_dist == 0 || back_dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
-                            errored = true;
-                            break;
-                        }
+                    if dist == 0 || dist > 3 || (*prev_num < num && *next_num < num) || (*prev_num > num && *next_num > num) {
+                        errored = true;
+                        break;
                     }
                 }
             }
