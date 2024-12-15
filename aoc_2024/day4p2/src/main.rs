@@ -64,10 +64,7 @@ fn get_xmas_count(puz_input: IndexMap<(usize, usize), char>) -> i32 {
             // println!("rl_diag: {rl_diag}");
             // println!("pos is {:?}", pos);
 
-            if (lr_diag == "MAS" || lr_diag == "SAM") && (rl_diag == "MAS" || rl_diag == "SAM") {
-                // println!("Condition achieved!");
-                xmas_count += 1;
-            } else { continue }
+            if (lr_diag == "MAS" || lr_diag == "SAM") && (rl_diag == "MAS" || rl_diag == "SAM") { xmas_count += 1 }
         }
     }
 
