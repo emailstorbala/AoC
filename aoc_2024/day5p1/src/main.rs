@@ -15,14 +15,11 @@ struct Input {
     pages: IndexMap<i32, Vec<i32>>,
 }
 
-impl Input {
-    fn new(rules: Vec<(i32, i32)>, pages: IndexMap<i32, Vec<i32>>) -> Input {
-        Input { rules, pages }
-    }
-}
-
 fn read_contents(content: String) -> Input {
-    let mut input: Input = Input::new(vec![], IndexMap::new());
+    let mut input: Input = Input {
+        rules: Vec::new(),
+        pages: IndexMap::new(),
+    };
     let mut page_cnt = 0;
 
     for line in content.split('\n') {
