@@ -37,7 +37,7 @@ string ParseProgramArguments(const int argc, const char *argv[]) {
 
         notify(vm);
     } catch (const error &ex) {
-        fmt::print(stderr, "Exception: {}\n", ex.what());
+        fmt::println(stderr, "Exception: {}", ex.what());
         prgDesc.print(std::cout);
         exit(3);
     }
@@ -56,13 +56,13 @@ int main(int argc, const char *argv[]) {
     for (const string &line : ReadInputFile(fname)) {
         AocUtils aocUtils;
         if (auto res = aocUtils.GetMarkerCharacter(line); res != string::npos) {
-            fmt::print("The result is {}\n", res);
+            fmt::println("The result is {}", res);
         }
     }
 
     auto end = chrono::steady_clock::now();
     auto dur = chrono::duration_cast<chrono::microseconds>(end - start).count();
-    fmt::print("Time taken: {} µ.sec\n", dur);
+    fmt::println("Time taken: {} µ.sec", dur);
 
     return EXIT_SUCCESS;
 }

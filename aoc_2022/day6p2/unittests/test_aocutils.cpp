@@ -1,8 +1,6 @@
 #include "AocUtils.h"
 #include <gtest/gtest.h>
 
-int GetMarkerCharacter(const std::string &inpStr);
-
 TEST(AocUtilsTest, GetMarkerCharacter) {
   std::string mystr = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
   AocUtils utils;

@@ -7,7 +7,6 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <ranges>
-#include <span>
 #include <sstream>
 #include <string>
 
@@ -120,7 +119,8 @@ std::list<string> Utilities::SimpleFileRead(string_view _fname) {
         myfile.close();
     } else {
         throw std::runtime_error(
-            fmt::format("Unable to open file '{}'!", _fname));
+            fmt::format("Unable to open file '{}'!", _fname)
+        );
         exit(2);
     }
 
