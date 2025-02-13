@@ -10,7 +10,6 @@ cc_library(
     "-fPIC"
   ],
   includes = ["inc"],
-  linkstatic = False,
   visibility = ["//visibility:private"],
 )
 
@@ -26,7 +25,6 @@ cc_library(
     "-fPIC"
   ],
   includes = ["inc"],
-  linkstatic = False,
   visibility = ["//visibility:private"],
 )
 
@@ -45,6 +43,7 @@ cc_binary(
     ":aoc_utils"
   ],
   linkopts = [
+    "-s",
     "-lboost_program_options",
     "-lfmt"
   ],
