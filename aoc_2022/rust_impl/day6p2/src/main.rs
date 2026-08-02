@@ -12,44 +12,47 @@ struct Args {
     file_name: String,
 }
 
-fn has_unique_chars(tmp_str: &str) -> bool {
-    let mut is_unique: bool = true;
-    let mut tmp: String = "".to_string();
-
-    for chr in tmp_str.chars() {
-        if tmp.contains(chr) {
-            is_unique = false;
-            break;
-        }
-        tmp.push(chr);
-    }
-
-    is_unique
+fn has_unique_chars(window: &[char]) -> bool {
+    let mut seen = std::collections::HashSet::with_capacity(window.len());
+    window.iter().all(|chr| seen.insert(chr))
 }
 
-fn get_unique_char_position(content: String) -> usize {
-    let mut chr_pos: usize = 0;
+fn get_unique_char_position(content: &str) -> Option<usize> {
+    let ends_with_newline = content.ends_with('\n');
+    let lines: Vec<&str> = content.lines().collect();
+    let mut char_offset: usize = 0;
 
-    for idx in 0..content.len() {
-        if (idx + DIST_CHAR_SIZE) < content.len() {
-            let tmp: String = content[idx..idx+DIST_CHAR_SIZE].to_string();
-            if has_unique_chars(&tmp) {
-                chr_pos = idx + DIST_CHAR_SIZE;
-                break;
+    for (idx, line) in lines.iter().enumerate() {
+        let chars: Vec<char> = line.chars().collect();
+        for window_idx in 0..chars.len().saturating_sub(DIST_CHAR_SIZE - 1) {
+            let window = &chars[window_idx..window_idx + DIST_CHAR_SIZE];
+            if has_unique_chars(window) {
+                return Some(char_offset + window_idx + DIST_CHAR_SIZE);
             }
         }
+
+        let has_separator = idx + 1 < lines.len() || ends_with_newline;
+        char_offset += chars.len() + usize::from(has_separator);
     }
 
-    chr_pos
+    None
 }
 
 fn main() {
-    let args = Args::parse();
     let start_time = Instant::now();
-    let content = fs::read_to_string(&args.file_name).expect("Unable to load the file!");
+    let args = Args::parse();
+    let content = match fs::read_to_string(&args.file_name) {
+        Ok(content) => content,
+        Err(err) => {
+            eprintln!("Unable to load the file '{}': {err}", args.file_name);
+            std::process::exit(1);
+        }
+    };
 
-    let res = get_unique_char_position(content);
-    println!("Result is {res}");
+    match get_unique_char_position(&content) {
+        Some(res) => println!("Result is {res}"),
+        None => println!("No unique window of size {DIST_CHAR_SIZE} found"),
+    }
 
     let duration = start_time.elapsed();
     println!("Total time taken -> {:?} ", duration);
