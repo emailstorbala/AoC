@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <chrono> // NOLINT [build/c++11]
 #include <fstream>
-#include <tuple>
 #include <boost/program_options.hpp>
 #include "Utilities.h"
 
@@ -19,7 +18,6 @@ using boost::program_options::error;
 using std::cout;
 using std::endl;
 using std::string;
-using std::tuple;
 using std::vector;
 using std::map;
 using std::ifstream;
@@ -37,7 +35,7 @@ map <char, int> PLAYER1;
 map <char, int> PLAYER2;
 
 
-tuple<string> ParseProgramArguments(const int argc, const char * argv[]) {
+string ParseProgramArguments(const int argc, const char * argv[]) {
     string filename;
     variables_map vm;
     options_description prgDesc{"Usage"};
@@ -61,7 +59,7 @@ tuple<string> ParseProgramArguments(const int argc, const char * argv[]) {
         exit(3);
     }
 
-    return make_tuple(filename);
+    return filename;
 }
 
 vector <std::pair<char, char>> ReadInputFile(string inpfile) {
@@ -107,7 +105,7 @@ int GetScore(int chosen, int otherChosen) {
 
 int main(int argc, const char * argv[]) {
     auto start = chrono::system_clock::now();
-    auto && [fname] = ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
+    auto && fname = ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
     vector <std::pair<char, char>> inpList = ReadInputFile(fname);
 
     PLAYER1['A'] = ROCK;
