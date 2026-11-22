@@ -1,6 +1,6 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
-#include <fmt/core.h>
 #include <iostream>
+#include <print>
 #include <chrono>
 #include <boost/program_options.hpp>
 #include "Utilities.h"
@@ -40,7 +40,7 @@ tuple<string> ParseProgramArguments(const int argc, const char * argv[]) {
 
         notify(vm);
     } catch (const error &ex) {
-        fmt::print(stderr, "Exception: {}\n", ex.what());
+        std::print(stderr, "Exception: {}\n", ex.what());
         cout << prgDesc << endl;
         exit(3);
     }
@@ -53,7 +53,7 @@ vector <std::pair<string, string>> ReadInputFile(string inpfile) {
     Utilities utils;
 
     for (auto && line : utils.SimpleFileRead(inpfile)) {
-        auto && [part1, part2] = utils.SplitStringExactHalf(line); // NOLINT [-Wc++17-extensions]
+        auto && [part1, part2] = utils.SplitStringExactHalf(line);
         inpCtx.push_back(std::make_pair(part1, part2));
     }
 
@@ -91,19 +91,19 @@ int64_t getPrioritySumOfItems(vector <char> _items) {
 
 int main(int argc, const char * argv[]) {
     auto start = chrono::system_clock::now();
-    auto && [fname] = ParseProgramArguments(argc, argv); // NOLINT [-Wc++17-extensions]
+    auto && [fname] = ParseProgramArguments(argc, argv);
     auto inpList = ReadInputFile(fname);
     Utilities utils;
 
     vector <char> allCommonChars;
-    for (auto && [p1, p2] : inpList) { // NOLINT [-Wc++17-extensions]
+    for (auto && [p1, p2] : inpList) {
         for (const char & cchr : utils.getCommonCharacters(p1, p2)) {
             allCommonChars.push_back(cchr);
         }
     }
 
     auto prioritySum = getPrioritySumOfItems(allCommonChars);
-    fmt::print("The priority sum is {}\n", prioritySum);
+    std::print("The priority sum is {}\n", prioritySum);
 
     auto end = chrono::system_clock::now();
     auto dur = chrono::duration_cast<chrono::nanoseconds>(end - start).count();

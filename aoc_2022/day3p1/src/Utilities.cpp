@@ -1,6 +1,4 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
-#include <fmt/format.h>
-#include <memory>
 #include <algorithm>
 #include "Utilities.h"
 
@@ -62,7 +60,7 @@ std::list <string> Utilities::SimpleFileRead(const std::string &_fname) {
         }
         myfile.close();
     } else {
-        throw std::runtime_error(fmt::format("Unable to open file '{}'!", _fname));
+        throw std::runtime_error(std::format("Unable to open file '{}'!", _fname));
         exit(2);
     }
 
