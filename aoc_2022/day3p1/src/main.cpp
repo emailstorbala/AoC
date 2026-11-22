@@ -1,8 +1,7 @@
 /* Copyright [2022-2023] Balamurugan R<emailstorbala@gmail.com> */
 #include <fmt/core.h>
 #include <iostream>
-#include <algorithm>
-#include <chrono> // NOLINT [build/c++11]
+#include <chrono>
 #include <boost/program_options.hpp>
 #include "Utilities.h"
 
